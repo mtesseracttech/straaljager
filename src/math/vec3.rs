@@ -266,17 +266,23 @@ impl IndexMut<usize> for Vec3 {
 
 impl PhysicsVector for Vec3 {
     fn reflect(i: &Self, n: &Self) -> Self {
-        debug_assert!(n.is_unit(), "The reflect function only works with normalized normal vectors");
+        debug_assert!(
+            n.is_unit(),
+            "The reflect function only works with normalized normal vectors"
+        );
         *i - 2.0 * i.dot(n) * *n
     }
 
     fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
-        debug_assert!(n.is_unit(), "The refraction function only works with normalized normal vectors");
+        debug_assert!(
+            n.is_unit(),
+            "The refraction function only works with normalized normal vectors"
+        );
         let n_dot_i = n.dot(i);
         let k = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
         if k < 0.0 {
             None
-        } else{
+        } else {
             Some(eta * *i - (eta * n_dot_i + k.sqrt()) * *n)
         }
     }
