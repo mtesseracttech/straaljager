@@ -128,30 +128,6 @@ impl ops::Div<Vec3> for Vec3 {
 
 // Vec3 + f32
 
-impl ops::Add<f32> for Vec3 {
-    type Output = Vec3;
-
-    fn add(self, other: f32) -> Self::Output {
-        Vec3 {
-            x: self.x + other,
-            y: self.y + other,
-            z: self.z + other,
-        }
-    }
-}
-
-impl ops::Sub<f32> for Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, other: f32) -> Self::Output {
-        Vec3 {
-            x: self.x - other,
-            y: self.y - other,
-            z: self.z - other,
-        }
-    }
-}
-
 impl ops::Mul<f32> for Vec3 {
     type Output = Vec3;
 
@@ -178,30 +154,6 @@ impl ops::Div<f32> for Vec3 {
 
 // f32 + f32
 
-impl ops::Add<Vec3> for f32 {
-    type Output = Vec3;
-
-    fn add(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self + other.x,
-            y: self + other.y,
-            z: self + other.z,
-        }
-    }
-}
-
-impl ops::Sub<Vec3> for f32 {
-    type Output = Vec3;
-
-    fn sub(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self - other.x,
-            y: self - other.y,
-            z: self - other.z,
-        }
-    }
-}
-
 impl ops::Mul<Vec3> for f32 {
     type Output = Vec3;
 
@@ -210,18 +162,6 @@ impl ops::Mul<Vec3> for f32 {
             x: self * other.x,
             y: self * other.y,
             z: self * other.z,
-        }
-    }
-}
-
-impl ops::Div<Vec3> for f32 {
-    type Output = Vec3;
-
-    fn div(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self / other.x,
-            y: self / other.y,
-            z: self / other.z,
         }
     }
 }
