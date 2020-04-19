@@ -1,3 +1,9 @@
+pub mod math;
+use math::*;
+
 fn main() {
-    println!("Hello, world!");
+    let vec = Vec3::new(0.0, 1.0, 1.0) - Vec3::new(1.0, 1.0, 1.0);
+
+    println!("{}", vec);
+    println!("{}", vec.length());
 }
