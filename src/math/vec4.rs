@@ -1,5 +1,5 @@
-use std::ops;
 use std::fmt;
+use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
 #[derive(Copy, Clone)]
 pub struct Vec4 {
@@ -9,6 +9,10 @@ pub struct Vec4 {
 }
 
 impl Vec4 {
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
+        Self { x, y, z, w}
+    }
+
     pub fn zero() -> Self {
         Vec4 {
             x: 0.0,
@@ -16,10 +20,6 @@ impl Vec4 {
             z: 0.0,
             w: 0.0,
         }
-    }
-
-    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
-        Self { x, y, z, w}
     }
 
     pub fn dot(&self, other: &Self) -> f32 {
@@ -51,6 +51,14 @@ impl Vec4 {
         self.z *= one_over_length;
         self.w *= one_over_length,
     }
+
+    pub fn size() -> usize {
+        4
+    }
+
+    pub fn is_unit(&self) -> bool {
+        approx_eq(&self.length(), &1.0)
+    }
 }
 
 impl fmt::Display for Vec4 {
@@ -59,7 +67,7 @@ impl fmt::Display for Vec4 {
     }
 }
 
-impl ops::Neg for Vec4 {
+impl Neg for Vec4 {
     type Output = Vec4;
 
     fn neg(self) -> Self::Output {
@@ -72,9 +80,11 @@ impl ops::Neg for Vec4 {
     }
 }
 
-// Vec4 + Vec4
-
-impl ops::Add<Vec4> for Vec4 {
+///
+/// Vector addition:
+/// v1 + v2
+///
+impl Add<Vec4> for Vec4 {
     type Output = Vec4;
 
     fn add(self, other: Vec4) -> Self::Output {
@@ -87,6 +97,10 @@ impl ops::Add<Vec4> for Vec4 {
     }
 }
 
+///
+/// Vector subtraction:
+/// v1 - v2
+///
 impl ops::Sub<Vec4> for Vec4 {
     type Output = Vec4;
 
@@ -100,7 +114,11 @@ impl ops::Sub<Vec4> for Vec4 {
     }
 }
 
-impl ops::Mul<Vec4> for Vec4 {
+///
+/// Member-wise vector multiplication:
+/// v1 * v2
+///
+impl Mul<Vec4> for Vec4 {
     type Output = Vec4;
 
     fn mul(self, other: Vec4) -> Self::Output {
@@ -113,7 +131,11 @@ impl ops::Mul<Vec4> for Vec4 {
     }
 }
 
-impl ops::Div<Vec4> for Vec4 {
+///
+/// Member-wise vector division:
+/// v1 / v2
+///
+impl Div<Vec4> for Vec4 {
     type Output = Vec4;
 
     fn div(self, other: Vec4) -> Self::Output {
@@ -126,8 +148,10 @@ impl ops::Div<Vec4> for Vec4 {
     }
 }
 
-// Vec4 + f32
-
+///
+/// Vector-scalar multiplication:
+/// v * s
+///
 impl ops::Mul<f32> for Vec4 {
     type Output = Vec4;
 
@@ -141,7 +165,11 @@ impl ops::Mul<f32> for Vec4 {
     }
 }
 
-impl ops::Div<f32> for Vec4 {
+///
+/// Vector-scalar division:
+/// v / s
+///
+impl Div<f32> for Vec4 {
     type Output = Vec4;
 
     fn div(self, other: f32) -> Self::Output {
@@ -154,8 +182,10 @@ impl ops::Div<f32> for Vec4 {
     }
 }
 
-// f32 + f32
-
+///
+/// Reversed vector-scalar multiplication:
+/// s * v
+///
 impl ops::Mul<Vec4> for f32 {
     type Output = Vec4;
 
@@ -165,6 +195,40 @@ impl ops::Mul<Vec4> for f32 {
             y: self * other.y,
             z: self * other.z,
             w: self * other.w,
+        }
+    }
+}
+
+impl PartialEq for Vec4 {
+    fn eq(&self, other: &Self) -> bool {
+        approx_eq(&self.x, &other.x) && approx_eq(&self.y, &other.y) && approx_eq(&self.z, &other.z) && approx_eq(&self.w, &other.w)
+    }
+}
+
+impl Index<usize> for Vec4 {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            3 => &self.w,
+            _ => panic!("Requested an invalid index on a Vec4: {}", index),
+        }
+    }
+}
+
+impl IndexMut<usize> for Vec4 {
+    type Output = f32;
+
+    fn index(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
+            3 => &mut self.w,
+            _ => panic!("Requested an invalid index on a Vec4: {}", index),
         }
     }
 }
