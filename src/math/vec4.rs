@@ -1,3 +1,4 @@
+use crate::math::{approx_eq, PhysicsVector};
 use std::fmt;
 use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
@@ -6,6 +7,7 @@ pub struct Vec4 {
     pub x: f32,
     pub y: f32,
     pub z: f32,
+    pub w: f32,
 }
 
 impl Vec4 {
@@ -49,7 +51,7 @@ impl Vec4 {
         self.x *= one_over_length;
         self.y *= one_over_length;
         self.z *= one_over_length;
-        self.w *= one_over_length,
+        self.w *= one_over_length;
     }
 
     pub fn size() -> usize {
@@ -101,7 +103,7 @@ impl Add<Vec4> for Vec4 {
 /// Vector subtraction:
 /// v1 - v2
 ///
-impl ops::Sub<Vec4> for Vec4 {
+impl Sub<Vec4> for Vec4 {
     type Output = Vec4;
 
     fn sub(self, other: Vec4) -> Self::Output {
@@ -152,7 +154,7 @@ impl Div<Vec4> for Vec4 {
 /// Vector-scalar multiplication:
 /// v * s
 ///
-impl ops::Mul<f32> for Vec4 {
+impl Mul<f32> for Vec4 {
     type Output = Vec4;
 
     fn mul(self, other: f32) -> Self::Output {
@@ -186,7 +188,7 @@ impl Div<f32> for Vec4 {
 /// Reversed vector-scalar multiplication:
 /// s * v
 ///
-impl ops::Mul<Vec4> for f32 {
+impl Mul<Vec4> for f32 {
     type Output = Vec4;
 
     fn mul(self, other: Vec4) -> Self::Output {
@@ -234,9 +236,7 @@ impl Index<usize> for Vec4 {
 /// Mutable Index Accessor, to assign to the vector through index and to get a mutable index
 ///
 impl IndexMut<usize> for Vec4 {
-    type Output = f32;
-
-    fn index(&mut self, index: usize) -> &mut Self::Output {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         match index {
             0 => &mut self.x,
             1 => &mut self.y,
