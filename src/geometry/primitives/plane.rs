@@ -1,7 +1,7 @@
 use crate::math::Vec3;
 
-#[derive(debug)]
+#[derive(Debug)]
 pub struct Plane {
     normal: Vec3,
-    d: f32,
+    distance: f32,
 }
