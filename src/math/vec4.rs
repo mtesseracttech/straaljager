@@ -57,7 +57,7 @@ impl Vec4 {
     }
 
     pub fn is_unit(&self) -> bool {
-        approx_eq(&self.length(), &1.0)
+        approx_eq(&self.length_squared(), &1.0)
     }
 }
 

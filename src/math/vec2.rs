@@ -1,3 +1,4 @@
+use crate::math::{approx_eq};
 use std::fmt;
 use std::ops;
 
@@ -41,6 +42,14 @@ impl Vec2 {
         self.x *= one_over_length;
         self.y *= one_over_length;
     }
+
+    pub fn size() -> usize {
+        2
+    }
+
+    pub fn is_unit(&self) -> bool {
+        approx_eq(&self.length_squared(), &1.0)
+    }
 }
 
 impl fmt::Display for Vec2 {
@@ -60,8 +69,10 @@ impl ops::Neg for Vec2 {
     }
 }
 
-// Vec2 + Vec2
-
+///
+/// Vector addition:
+/// v1 + v2
+///
 impl ops::Add<Vec2> for Vec2 {
     type Output = Vec2;
 
@@ -73,6 +84,10 @@ impl ops::Add<Vec2> for Vec2 {
     }
 }
 
+///
+/// Vector subtraction
+/// v1 - v2
+///
 impl ops::Sub<Vec2> for Vec2 {
     type Output = Vec2;
 
@@ -84,6 +99,10 @@ impl ops::Sub<Vec2> for Vec2 {
     }
 }
 
+///
+/// Member-wise vector * vector implementation
+/// v1 * v2
+///
 impl ops::Mul<Vec2> for Vec2 {
     type Output = Vec2;
 
@@ -95,6 +114,10 @@ impl ops::Mul<Vec2> for Vec2 {
     }
 }
 
+///
+/// Member-wise vector division
+/// v1 / v2
+///
 impl ops::Div<Vec2> for Vec2 {
     type Output = Vec2;
 
@@ -106,8 +129,10 @@ impl ops::Div<Vec2> for Vec2 {
     }
 }
 
-// Vec2 + f32
-
+///
+/// Vector-scalar multiplication
+/// v * s
+///
 impl ops::Mul<f32> for Vec2 {
     type Output = Vec2;
 
@@ -119,6 +144,10 @@ impl ops::Mul<f32> for Vec2 {
     }
 }
 
+///
+/// Vector-scalar division
+/// v / s
+///
 impl ops::Div<f32> for Vec2 {
     type Output = Vec2;
 
@@ -130,8 +159,10 @@ impl ops::Div<f32> for Vec2 {
     }
 }
 
-// f32 + f32
-
+///
+/// Reversed vector-scalar multiplication
+/// s * v
+///
 impl ops::Mul<Vec2> for f32 {
     type Output = Vec2;
 
