@@ -199,12 +199,23 @@ impl ops::Mul<Vec4> for f32 {
     }
 }
 
+///
+/// Partial equality
+/// Only returns true if v1 == v2 for every element
+///
 impl PartialEq for Vec4 {
     fn eq(&self, other: &Self) -> bool {
         approx_eq(&self.x, &other.x) && approx_eq(&self.y, &other.y) && approx_eq(&self.z, &other.z) && approx_eq(&self.w, &other.w)
     }
 }
 
+///
+/// Index Accessor
+/// v[0] == v.x
+/// v[1] == v.y
+/// v[2] == v.z
+/// v[3] == v.w
+///
 impl Index<usize> for Vec4 {
     type Output = f32;
 
@@ -219,6 +230,9 @@ impl Index<usize> for Vec4 {
     }
 }
 
+///
+/// Mutable Index Accessor, to assign to the vector through index and to get a mutable index
+///
 impl IndexMut<usize> for Vec4 {
     type Output = f32;
 
@@ -229,6 +243,30 @@ impl IndexMut<usize> for Vec4 {
             2 => &mut self.z,
             3 => &mut self.w,
             _ => panic!("Requested an invalid index on a Vec4: {}", index),
+        }
+    }
+}
+
+impl PhysicsVector for Vec4 {
+    fn reflect(i: &Self, n: &Self) -> Self {
+        debug_assert!(
+            n.is_unit(),
+            "The reflect function only works with normalized normal vectors"
+        );
+        *i - 2.0 * i.dot(n) * *n
+    }
+
+    fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
+        debug_assert!(
+            n.is_unit(),
+            "The refraction function only works with normalized normal vectors"
+        );
+        let n_dot_i = n.dot(i);
+        let k = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
+        if k < 0.0 {
+            None
+        } else {
+            Some(eta * *i - (eta * n_dot_i + k.sqrt()) * *n)
         }
     }
 }
