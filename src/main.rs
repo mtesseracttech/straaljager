@@ -1,4 +1,7 @@
-pub mod math;
+mod geometry;
+mod math;
+
+use geometry::*;
 use math::*;
 
 fn main() {
