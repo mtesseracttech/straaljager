@@ -66,7 +66,7 @@ impl Vec3 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
-    pub fn normalized(&self) -> Vec3 {
+    pub fn normalized(&self) -> Self {
         let one_over_length: f32 = 1.0 / self.length();
         Vec3 {
             x: self.x * one_over_length,
@@ -86,7 +86,7 @@ impl Vec3 {
         3
     }
 
-    pub fn is_unit(self) -> bool {
+    pub fn is_unit(&self) -> bool {
         approx_eq(self.length_squared(), 1.0)
     }
 }
@@ -142,7 +142,7 @@ impl Sub<Vec3> for Vec3 {
 }
 
 ///
-/// member-wise vector * vector implementation
+/// Member-wise vector * vector implementation
 /// v1 * v2
 ///
 impl Mul<Vec3> for Vec3 {
