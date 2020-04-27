@@ -267,7 +267,7 @@ impl IndexMut<usize> for VecN {
 }
 
 #[test]
-fn test_vec4_new() {
+fn test_vecn_new() {
     let vec: VecN = VecN::new(&[1.0, 2.0, 3.0, 4.0, 5.0]);
     assert_eq!(vec.size, 5);
     assert!(approx_eq(vec.data[0], 1.0));
@@ -278,7 +278,7 @@ fn test_vec4_new() {
 }
 
 #[test]
-fn test_vec4_dot() {
+fn test_vecn_dot() {
     let vec1: VecN = VecN::new(&[1.0, 2.0, 3.0, 4.0, 5.0]);
     let vec2: VecN = VecN::new(&[6.0, 7.0, 8.0, 9.0, 10.0]);
     assert!(approx_eq(vec1.dot(&vec2), 130.0));
@@ -288,13 +288,13 @@ fn test_vec4_dot() {
 }
 
 #[test]
-fn test_vec4_length_squared() {
+fn test_vecn_length_squared() {
     let vec1: VecN = VecN::new(&[1.0, 3.0, 4.0, -4.0, 6.0, -8.0]);
     assert!(approx_eq(vec1.length_squared(), vec1.dot(&vec1)));
 }
 
 #[test]
-fn test_vec4_length() {
+fn test_vecn_length() {
     let vec1: VecN = VecN::new(&[1.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
     assert!(approx_eq(vec1.length(), 1.0));
 
@@ -306,7 +306,7 @@ fn test_vec4_length() {
 }
 
 #[test]
-fn test_vec4_normalized() {
+fn test_vecn_normalized() {
     let vec1: VecN = VecN::new(&[4.0, -6.0, 8.0, -12.0, 14.0, -16.0]);
     let vec1_norm: VecN = vec1.normalized();
 
@@ -323,7 +323,7 @@ fn test_vec4_normalized() {
 }
 
 #[test]
-fn test_vec4_normalize() {
+fn test_vecn_normalize() {
     let mut vec1: VecN = VecN::new(&[4.0, -6.0, 8.0, -12.0]);
     vec1.normalize();
 
@@ -332,14 +332,14 @@ fn test_vec4_normalize() {
 }
 
 #[test]
-fn test_vec4_negate() {
+fn test_vecn_negate() {
     let vec: VecN = -VecN::new(&[1.0, -2.0, 3.0, -4.0, 5.0, -6.0]);
 
     assert_eq!(vec, VecN::new(&[-1.0, 2.0, -3.0, 4.0, -5.0, 6.0]));
 }
 
 #[test]
-fn test_vec4_add_vec4() {
+fn test_vecn_add_vecn() {
     let vec1: VecN = VecN::new(&[1.0, -2.0, 3.0, -4.0, 5.0, -6.0]);
     let vec2: VecN = VecN::new(&[-7.0, 8.0, -9.0, 10.0, -11.0, 12.0]);
     let result: VecN = vec1 + vec2;
@@ -348,7 +348,7 @@ fn test_vec4_add_vec4() {
 }
 
 #[test]
-fn test_vec4_sub_vec4() {
+fn test_vecn_sub_vecn() {
     let vec1: VecN = VecN::new(&[1.0, -2.0, 3.0, -4.0, 5.0, -6.0]);
     let vec2: VecN = VecN::new(&[-7.0, 8.0, -9.0, 10.0, -11.0, 12.0]);
     let result: VecN = vec1 - vec2;
@@ -357,7 +357,7 @@ fn test_vec4_sub_vec4() {
 }
 
 #[test]
-fn test_vec4_mul_vec4() {
+fn test_vecn_mul_vecn() {
     let vec1: VecN = VecN::new(&[1.0, -2.0, 3.0, -4.0, 5.0, -6.0]);
     let vec2: VecN = VecN::new(&[7.0, -8.0, 9.0, -10.0, 11.0, -12.0]);
     let result: VecN = vec1 * vec2;
@@ -366,7 +366,7 @@ fn test_vec4_mul_vec4() {
 }
 
 #[test]
-fn test_vec4_div_vec4() {
+fn test_vecn_div_vecn() {
     let vec1: VecN = VecN::new(&[5.0, -6.0, 7.0, -8.0]);
     let vec2: VecN = VecN::new(&[-2.0, 3.0, -2.0, 2.0]);
     let result: VecN = vec1 / vec2;
@@ -375,7 +375,7 @@ fn test_vec4_div_vec4() {
 }
 
 #[test]
-fn test_vec4_mul_scalar() {
+fn test_vecn_mul_scalar() {
     let vec1: VecN = VecN::new(&[5.0, -6.0, 7.0, -8.0]);
     let result: VecN = vec1 * -2.0;
 
@@ -383,7 +383,7 @@ fn test_vec4_mul_scalar() {
 }
 
 #[test]
-fn test_vec4_div_scalar() {
+fn test_vecn_div_scalar() {
     let vec1: VecN = VecN::new(&[5.0, -6.0, 7.0, -8.0]);
     let result: VecN = vec1 / -2.0;
 
@@ -391,7 +391,7 @@ fn test_vec4_div_scalar() {
 }
 
 #[test]
-fn test_vec4_mul_scalar_reversed() {
+fn test_vecn_mul_scalar_reversed() {
     let vec1: VecN = VecN::new(&[5.0, -6.0, 7.0, -8.0]);
     let result: VecN = -2.0 * vec1;
 
@@ -399,7 +399,7 @@ fn test_vec4_mul_scalar_reversed() {
 }
 
 #[test]
-fn test_vec4_index() {
+fn test_vecn_index() {
     let vec1: VecN = VecN::new(&[5.0, -6.0, 7.0, -8.0, 9.0, -10.0]);
     assert!(approx_eq(vec1[0], 5.0));
     assert!(approx_eq(vec1[1], -6.0));
