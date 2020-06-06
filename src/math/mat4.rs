@@ -1,5 +1,5 @@
 use std::ops::IndexMut;
-use std::ops::Index;
+use std::ops::{Index, Mul};
 
 struct Mat4 {
     m: [f32; 16],
@@ -16,6 +16,28 @@ impl Mat4 {
         result[5] = 1.0;
         result[10] = 1.0;
         result[15] = 1.0;
+        result
+    }
+}
+
+///
+/// Matrix * matrix implementation
+/// m1 * m2
+///
+impl Mul<Mat4> for Mat4 {
+    type Output = Mat4;
+
+    fn mul(self, other: Mat4) -> Self::Output {
+        let mut result = Mat4::zero();
+
+        for i in 0..4 {
+            for j in 0..4 {
+                for k in 0..4 {
+                    result.m[i + j * 4] += self.m[i + k * 4] * other.m[k + j * 4];
+                }
+            }
+        }
+
         result
     }
 }
