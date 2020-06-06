@@ -18,6 +18,24 @@ impl Mat4 {
         result[15] = 1.0;
         result
     }
+
+    pub fn ortho(left: f32, right: f32, top: f32, bottom: f32, near: f32, far: f32) -> Self {
+        let right_left = right - left;
+        let top_bottom = top - bottom;
+        let far_near = far - near;
+
+        let mut result = Mat4::identity();
+        result[0] = 2.0f32 / right_left;
+        result[3] = - (right + left) / right_left;
+
+        result[5] = 2.0f32 / top_bottom;
+        result[7] = - (top + bottom) / top_bottom;
+
+        result[10] = -2.0f32 / far_near;
+        result[11] = - (far + near) / far_near;
+
+        return result;
+    }
 }
 
 ///
