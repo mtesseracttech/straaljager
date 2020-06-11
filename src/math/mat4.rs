@@ -39,8 +39,18 @@ impl Mat4 {
         result
     }
 
+    pub fn translation(translation: Vec3) -> Self {
+        let mut result = Self::identity();
+
+        result[3] = translation.x;
+        result[7] = translation.y;
+        result[11] = translation.z;
+
+        result
+    }
+
     pub fn scale(scale: Vec3) -> Self {
-        let result = Self::identity();
+        let mut result = Self::identity();
 
         result[0] = scale.x;
         result[5] = scale.y;
