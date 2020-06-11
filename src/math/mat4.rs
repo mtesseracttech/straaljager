@@ -1,23 +1,31 @@
+use crate::math::approx_eq;
 use std::ops::IndexMut;
 use std::ops::{Index, Mul};
 
 use crate::math::vec3::*;
 
+#[derive(Debug)]
 pub struct Mat4 {
     pub m: [f32; 16],
 }
 
 impl Mat4 {
+    pub fn new(data: [f32; 16]) -> Self{
+        Mat4 { m: data }
+    }
+    
     pub fn zero() -> Self {
         Mat4 { m: [0.0; 16] }
     }
 
     pub fn identity() -> Self {
         let mut result: Mat4 = Mat4 { m: [0.0; 16] };
+
         result[0] = 1.0;
         result[5] = 1.0;
         result[10] = 1.0;
         result[15] = 1.0;
+
         result
     }
 
@@ -73,12 +81,28 @@ impl Mul<Mat4> for Mat4 {
         for i in 0..4 {
             for j in 0..4 {
                 for k in 0..4 {
-                    result.m[i + j * 4] += self.m[i + k * 4] * other.m[k + j * 4];
+                    result[i + j * 4] += self.m[k + j * 4] * other.m[i + k * 4];
                 }
             }
         }
 
         result
+    }
+}
+
+///
+/// Partial equality
+/// Only returns true if v1 == v2 for every element
+///
+impl PartialEq for Mat4 {
+    fn eq(&self, other: &Self) -> bool {
+        for i in 0..16 {
+            if !approx_eq(self[i], other[i]) {
+                return false;
+            }
+        }
+        
+        true
     }
 }
 
