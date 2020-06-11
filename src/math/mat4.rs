@@ -1,6 +1,8 @@
 use std::ops::IndexMut;
 use std::ops::{Index, Mul};
 
+use crate::Vec3;
+
 struct Mat4 {
     m: [f32; 16],
 }
@@ -34,7 +36,17 @@ impl Mat4 {
         result[10] = -2.0f32 / far_near;
         result[11] = - (far + near) / far_near;
 
-        return result;
+        result
+    }
+
+    pub fn scale(scale: Vec3) -> Self {
+        let result = Self::identity();
+
+        result[0] = scale.x;
+        result[5] = scale.y;
+        result[10] = scale.z;
+
+        result
     }
 }
 
