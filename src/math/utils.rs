@@ -10,8 +10,18 @@ pub fn approx_eq(lhs: f32, rhs: f32) -> bool {
     } else if lhs == 0.0 || rhs == 0.0 || diff < std::f32::MIN_POSITIVE {
         diff < 1e-5
     } else {
-      diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
+        diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
     }
+}
+
+///
+/// Assertion macro for approx_eq
+///
+#[macro_export]
+macro_rules! assert_approx_eq {
+    ($a:expr, $b:expr) => {{
+        assert!(approx_eq($a, $b));
+    }};
 }
 
 ///
