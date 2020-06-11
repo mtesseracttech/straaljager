@@ -1,10 +1,10 @@
 use std::ops::IndexMut;
 use std::ops::{Index, Mul};
 
-use crate::Vec3;
+use crate::math::vec3::*;
 
-struct Mat4 {
-    m: [f32; 16],
+pub struct Mat4 {
+    pub m: [f32; 16],
 }
 
 impl Mat4 {
