@@ -3,12 +3,14 @@ pub use vec2::*;
 pub use vec3::*;
 pub use vec4::*;
 pub use vecn::*;
+pub use ivec4::*;
 
 pub mod utils;
 pub mod vec2;
 pub mod vec3;
 pub mod vec4;
 pub mod vecn;
+pub mod ivec4;
 
 pub trait PhysicsVector: Sized {
     ///
