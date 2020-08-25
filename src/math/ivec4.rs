@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::*;
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct IVec4 {
     pub x: i32,
     pub y: i32,
@@ -23,7 +23,7 @@ impl IVec4 {
         IVec4 { x, y, z, w }
     }
 
-    pub fn dot(&self, other: Self) -> i32 {
+    pub fn dot(&self, other: &Self) -> i32 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
     }
 
@@ -34,13 +34,17 @@ impl IVec4 {
     pub fn length(&self) -> f32 {
         ((self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w) as f32).sqrt()
     }
+
+    pub fn is_unit(&self) -> bool {
+        self.length_squared() == 1
+    }
 }
 
 impl fmt::Display for IVec4 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "IVec2 {{x: {}, y: {}, z: {}, w: {}}}",
+            "IVec4 {{x: {}, y: {}, z: {}, w: {}}}",
             self.x, self.y, self.z, self.w
         )
     }
@@ -129,10 +133,10 @@ impl Div<i32> for IVec4 {
 
     fn div(self, other: i32) -> Self::Output {
         IVec4 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
-            w: self.w * other,
+            x: self.x / other,
+            y: self.y / other,
+            z: self.z / other,
+            w: self.w / other,
         }
     }
 }
