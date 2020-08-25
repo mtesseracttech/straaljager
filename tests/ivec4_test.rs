@@ -16,7 +16,7 @@ fn test_ivec4_dot() {
     assert!(vec1.dot(&vec2) == 70);
 
     let vec3: IVec4 = IVec4::new(1, 1, 1, 1);
-    assert!(vec3.dot(&vec3) == 4)
+    assert!(vec3.dot(&vec3) == 4);
 }
 
 #[test]
