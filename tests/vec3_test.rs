@@ -16,7 +16,7 @@ fn test_vec3_dot() {
     assert!(approx_eq(vec1.dot(&vec2), 38.0));
 
     let vec3: Vec3 = Vec3::new(1.0, 1.0, 1.0);
-    assert!(approx_eq(vec3.dot(&vec3), 3.0))
+    assert!(approx_eq(vec3.dot(&vec3), 3.0));
 }
 
 #[test]
