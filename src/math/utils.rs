@@ -1,17 +1,17 @@
-use std::cmp::Ordering;
-
 ///
 /// Floating point equality
 ///
-pub fn approx_eq(lhs: &f32, rhs: &f32) -> bool {
-    return match lhs.partial_cmp(rhs) {
-        None => false,
-        Some(o) => match o {
-            Ordering::Less => false,
-            Ordering::Equal => true,
-            Ordering::Greater => false,
-        },
-    };
+pub fn approx_eq(lhs: f32, rhs: f32) -> bool {
+    let abs_a = lhs.abs();
+    let abs_b = rhs.abs();
+    let diff = (lhs - rhs).abs();
+    if lhs == rhs {
+        true
+    } else if lhs == 0.0 || rhs == 0.0 || diff < std::f32::MIN_POSITIVE {
+        diff < 1e-5
+    } else {
+      diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
+    }
 }
 
 ///

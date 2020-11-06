@@ -2,7 +2,7 @@ use crate::math::{approx_eq, PhysicsVector};
 use std::fmt;
 use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -66,7 +66,7 @@ impl Vec3 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
-    pub fn normalized(&self) -> Vec3 {
+    pub fn normalized(&self) -> Self {
         let one_over_length: f32 = 1.0 / self.length();
         Vec3 {
             x: self.x * one_over_length,
@@ -87,7 +87,7 @@ impl Vec3 {
     }
 
     pub fn is_unit(&self) -> bool {
-        approx_eq(&self.length_squared(), &1.0)
+        approx_eq(self.length_squared(), 1.0)
     }
 }
 
@@ -142,7 +142,7 @@ impl Sub<Vec3> for Vec3 {
 }
 
 ///
-/// member-wise vector * vector implementation
+/// Member-wise vector * vector implementation
 /// v1 * v2
 ///
 impl Mul<Vec3> for Vec3 {
@@ -227,7 +227,7 @@ impl Mul<Vec3> for f32 {
 ///
 impl PartialEq for Vec3 {
     fn eq(&self, other: &Self) -> bool {
-        approx_eq(&self.x, &other.x) && approx_eq(&self.y, &other.y) && approx_eq(&self.z, &other.z)
+        approx_eq(self.x, other.x) && approx_eq(self.y, other.y) && approx_eq(self.z, other.z)
     }
 }
 
