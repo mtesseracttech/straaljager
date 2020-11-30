@@ -1,4 +1,3 @@
-use crate::math::approx_eq;
 use std::ops::IndexMut;
 use std::ops::{Index, Mul};
 
@@ -124,6 +123,23 @@ impl Mul<Mat4> for Mat4 {
                 self.r3.dot(&t.r3),
             ),
         }
+    }
+}
+
+///
+/// Matrix * Vec4 implementation
+/// m * v
+///
+impl Mul<Vec4> for Mat4 {
+    type Output = Vec4;
+
+    fn mul(self, other: Vec4) -> Self::Output {
+        Vec4::new(
+            self.r0.dot(&other),
+            self.r1.dot(&other),
+            self.r2.dot(&other),
+            self.r3.dot(&other),
+        )
     }
 }
 

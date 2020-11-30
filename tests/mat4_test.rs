@@ -1,6 +1,4 @@
-use straaljager::assert_approx_eq;
 use straaljager::math::mat4::*;
-use straaljager::math::utils::approx_eq;
 use straaljager::math::vec4::*;
 
 #[test]
@@ -53,7 +51,8 @@ fn test_mat4_transposed_self_twice() {
 fn test_mat4_transposed() {
     let mat1 = Mat4::new([
         0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0,
-    ]).transposed();
+    ])
+    .transposed();
     let mat2 = Mat4::new([
         0.0, 4.0, 8.0, 12.0, 1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0,
     ]);
