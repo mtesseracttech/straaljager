@@ -2,6 +2,9 @@ use crate::math::Vec3;
 
 #[derive(Debug)]
 pub struct Plane {
-    normal: Vec3,
-    distance: f32,
+    pub normal: Vec3,
+    pub distance: f32,
 }
+
+
+
