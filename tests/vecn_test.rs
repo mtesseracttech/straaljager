@@ -4,7 +4,7 @@ use straaljager::math::vecn::*;
 #[test]
 fn test_vecn_new() {
     let vec: VecN = VecN::new(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-    assert_eq!(vec.size, 5);
+    assert_eq!(vec.size(), 5);
     assert!(approx_eq(vec.data[0], 1.0));
     assert!(approx_eq(vec.data[1], 2.0));
     assert!(approx_eq(vec.data[2], 3.0));

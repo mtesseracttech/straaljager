@@ -4,71 +4,50 @@ use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
 #[derive(Debug, Clone)]
 pub struct VecN {
-    pub size: usize,
     pub data: Vec<f32>,
 }
 
 impl VecN {
     pub fn new(data: &[f32]) -> VecN {
         VecN {
-            size: data.len(),
             data: data.to_vec(),
         }
     }
 
     pub fn zero(size: usize) -> VecN {
         VecN {
-            size,
             data: vec![0.0; size],
         }
     }
 
     pub fn dot(&self, other: &Self) -> f32 {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result: f32 = 0.0;
-        for i in 0..self.size {
-            result += self.data[i] * other.data[i];
-        }
-        result
+        self.data.iter().zip(other.data.iter()).map(|(a, b)| a * b).sum()
     }
 
     pub fn length_squared(&self) -> f32 {
-        let mut result: f32 = 0.0;
-        for i in 0..self.size {
-            result += self.data[i] * self.data[i];
-        }
-        result
+        self.data.iter().map(|x| x * x).sum()
     }
 
     pub fn length(&self) -> f32 {
-        let mut result: f32 = 0.0;
-        for i in 0..self.size {
-            result += self.data[i] * self.data[i];
-        }
-        result.sqrt()
+        self.data.iter().map(|x| x * x).sum::<f32>().sqrt()
     }
 
     pub fn normalized(&self) -> Self {
         let one_over_length: f32 = 1.0 / self.length();
-
-        let mut result: VecN = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] * one_over_length;
+        VecN {
+            data: self.data.iter().map(|x| x * one_over_length).collect(),
         }
-        result
     }
 
     pub fn normalize(&mut self) {
         let one_over_length: f32 = 1.0 / self.length();
-
-        for i in 0..self.size {
-            self.data[i] *= one_over_length;
-        }
+        self.data.iter_mut().for_each(|x| *x *= one_over_length);
     }
 
     pub fn size(&self) -> usize {
-        self.size
+        self.data.len()
     }
 
     pub fn is_unit(&self) -> bool {
@@ -78,7 +57,7 @@ impl VecN {
 
 impl fmt::Display for VecN {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "VecN {{size: {}, data: {:?}}}", self.size, self.data)
+        write!(f, "VecN {{size: {}, data: {:?}}}", self.size(), self.data)
     }
 }
 
@@ -86,12 +65,9 @@ impl Neg for VecN {
     type Output = VecN;
 
     fn neg(self) -> Self::Output {
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = -self.data[i];
+        VecN {
+            data: self.data.iter().map(|x| -x).collect(),
         }
-
-        result
     }
 }
 
@@ -103,14 +79,11 @@ impl Add<VecN> for VecN {
     type Output = VecN;
 
     fn add(self, other: VecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] + other.data[i];
+        VecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a + b).collect(),
         }
-
-        result
     }
 }
 
@@ -122,14 +95,11 @@ impl Sub<VecN> for VecN {
     type Output = VecN;
 
     fn sub(self, other: VecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] - other.data[i];
+        VecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a - b).collect(),
         }
-
-        result
     }
 }
 
@@ -141,14 +111,11 @@ impl Mul<VecN> for VecN {
     type Output = VecN;
 
     fn mul(self, other: VecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] * other.data[i];
+        VecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a * b).collect(),
         }
-
-        result
     }
 }
 
@@ -160,14 +127,11 @@ impl Div<VecN> for VecN {
     type Output = VecN;
 
     fn div(self, other: VecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] / other.data[i];
+        VecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a / b).collect(),
         }
-
-        result
     }
 }
 
@@ -179,12 +143,9 @@ impl Mul<f32> for VecN {
     type Output = VecN;
 
     fn mul(self, other: f32) -> Self::Output {
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] * other;
+        VecN {
+            data: self.data.iter().map(|x| x * other).collect(),
         }
-
-        result
     }
 }
 
@@ -196,12 +157,9 @@ impl Div<f32> for VecN {
     type Output = VecN;
 
     fn div(self, other: f32) -> Self::Output {
-        let mut result = VecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] / other;
+        VecN {
+            data: self.data.iter().map(|x| x / other).collect(),
         }
-
-        result
     }
 }
 
@@ -213,12 +171,9 @@ impl Mul<VecN> for f32 {
     type Output = VecN;
 
     fn mul(self, other: VecN) -> Self::Output {
-        let mut result = VecN::zero(other.size);
-        for i in 0..other.size {
-            result.data[i] = self * other.data[i];
+        VecN {
+            data: other.data.iter().map(|x| x * self).collect(),
         }
-
-        result
     }
 }
 
@@ -228,17 +183,11 @@ impl Mul<VecN> for f32 {
 ///
 impl PartialEq for VecN {
     fn eq(&self, other: &Self) -> bool {
-        if self.size != other.size {
+        if self.size() != other.size() {
             return false;
         }
 
-        for i in 0..self.size {
-            if !approx_eq(self.data[i], other.data[i]) {
-                return false;
-            }
-        }
-
-        true
+        self.data.iter().zip(other.data.iter()).all(|(a, b)| approx_eq(*a, *b))
     }
 }
 
@@ -249,7 +198,7 @@ impl Index<usize> for VecN {
     type Output = f32;
 
     fn index(&self, index: usize) -> &Self::Output {
-        assert!(index < self.size);
+        assert!(index < self.size());
 
         &self.data[index]
     }
@@ -260,7 +209,7 @@ impl Index<usize> for VecN {
 ///
 impl IndexMut<usize> for VecN {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        assert!(index < self.size);
+        assert!(index < self.size());
 
         &mut self.data[index]
     }
