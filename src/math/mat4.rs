@@ -149,12 +149,7 @@ impl Mul<Vec4> for Mat4 {
 ///
 impl PartialEq for Mat4 {
     fn eq(&self, other: &Self) -> bool {
-        for i in 0..4 {
-            if self[i] != other[i] {
-                return false;
-            }
-        }
-        true
+        (0..4).into_iter().all(|i| self[i] == other[i])
     }
 }
 
