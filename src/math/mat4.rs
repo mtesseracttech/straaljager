@@ -1,5 +1,4 @@
-use std::ops::IndexMut;
-use std::ops::{Index, Mul};
+use std::ops::{Div, Index, IndexMut, Mul};
 
 use crate::math::vec3::*;
 use crate::math::vec4::*;
@@ -86,16 +85,86 @@ impl Mat4 {
             r3: Vec4::new(self.r0.w, self.r1.w, self.r2.w, self.r3.w),
         }
     }
+
+    pub fn adjoint(&self) -> Mat4 {
+        let v0 = self[2][2] * self[3][3] - self[3][2] * self[2][3];
+        let v1 = self[2][1] * self[3][3] - self[3][1] * self[2][3];
+        let v2 = self[2][1] * self[3][2] - self[3][1] * self[2][2];
+        let v3 = self[2][0] * self[3][3] - self[3][0] * self[2][3];
+        let v4 = self[2][0] * self[3][2] - self[3][0] * self[2][2];
+        let v5 = self[2][0] * self[3][1] - self[3][0] * self[2][1];
+        let v6 = self[1][2] * self[3][3] - self[3][2] * self[1][3];
+        let v7 = self[1][1] * self[3][3] - self[3][1] * self[1][3];
+        let v8 = self[1][1] * self[3][2] - self[3][1] * self[1][2];
+        let v9 = self[1][0] * self[3][3] - self[3][0] * self[1][3];
+        let v10 = self[1][0] * self[3][2] - self[3][0] * self[1][2];
+        let v11 = self[1][0] * self[3][1] - self[3][0] * self[1][1];
+        let v12 = self[1][2] * self[2][3] - self[2][2] * self[1][3];
+        let v13 = self[1][1] * self[2][3] - self[2][1] * self[1][3];
+        let v14 = self[1][1] * self[2][2] - self[2][1] * self[1][2];
+        let v15 = self[1][0] * self[2][3] - self[2][0] * self[1][3];
+        let v16 = self[1][0] * self[2][2] - self[2][0] * self[1][2];
+        let v17 = self[1][0] * self[2][1] - self[2][0] * self[1][1];
+
+        let r0 = Vec4 {
+            x: self[1][1] * v0 - self[1][2] * v1 + self[1][3] * v2,
+            y: -(self[0][1] * v0 - self[0][2] * v1 + self[0][3] * v2),
+            z: self[0][1] * v6 - self[0][2] * v7 + self[0][3] * v8,
+            w: -(self[0][1] * v12 - self[0][2] * v13 + self[0][3] * v14),
+        };
+
+        let r1 = Vec4 {
+            x: -(self[1][0] * v0 - self[1][2] * v3 + self[1][3] * v4),
+            y: self[0][0] * v0 - self[0][2] * v3 + self[0][3] * v4,
+            z: -(self[0][0] * v6 - self[0][2] * v9 + self[0][3] * v10),
+            w: self[0][0] * v12 - self[0][2] * v15 + self[0][3] * v16,
+        };
+
+        let r2 = Vec4 {
+            x: self[1][0] * v1 - self[1][1] * v3 + self[1][3] * v5,
+            y: -(self[0][0] * v1 - self[0][1] * v3 + self[0][3] * v5),
+            z: self[0][0] * v7 - self[0][1] * v9 + self[0][3] * v11,
+            w: -(self[0][0] * v13 - self[0][1] * v15 + self[0][3] * v17),
+        };
+
+        let r3 = Vec4 {
+            x: -(self[1][0] * v2 - self[1][1] * v4 + self[1][2] * v5),
+            y: self[0][0] * v2 - self[0][1] * v4 + self[0][2] * v5,
+            z: -(self[0][0] * v8 - self[0][1] * v10 + self[0][2] * v11),
+            w: self[0][0] * v14 - self[0][1] * v16 + self[0][2] * v17,
+        };
+
+        Mat4 { r0, r1, r2, r3 }
+    }
+
+    pub fn inverse(&self) -> Mat4 {
+        let adjoint = self.adjoint();
+
+        let det = self[0].dot(&adjoint.column(0));
+
+        &adjoint * (1.0 / det)
+    }
+
+    pub fn column(&self, i: usize) -> Vec4 {
+        assert!(i < 4);
+
+        Vec4 {
+            x: self.r0[i],
+            y: self.r1[i],
+            z: self.r2[i],
+            w: self.r3[i],
+        }
+    }
 }
 
 ///
 /// Matrix * matrix implementation
 /// m1 * m2
 ///
-impl Mul<Mat4> for Mat4 {
+impl Mul<&Mat4> for &Mat4 {
     type Output = Mat4;
 
-    fn mul(self, other: Mat4) -> Self::Output {
+    fn mul(self, other: &Mat4) -> Self::Output {
         let t = other.transposed();
         Mat4 {
             r0: Vec4::new(
@@ -130,16 +199,50 @@ impl Mul<Mat4> for Mat4 {
 /// Matrix * Vec4 implementation
 /// m * v
 ///
-impl Mul<Vec4> for Mat4 {
+impl Mul<&Vec4> for &Mat4 {
     type Output = Vec4;
 
-    fn mul(self, other: Vec4) -> Self::Output {
+    fn mul(self, other: &Vec4) -> Self::Output {
         Vec4::new(
             self.r0.dot(&other),
             self.r1.dot(&other),
             self.r2.dot(&other),
             self.r3.dot(&other),
         )
+    }
+}
+
+///
+/// Matrix * f32 implementation
+/// m * v
+///
+impl Mul<f32> for &Mat4 {
+    type Output = Mat4;
+
+    fn mul(self, other: f32) -> Self::Output {
+        Mat4 {
+            r0: self.r0 * other,
+            r1: self.r1 * other,
+            r2: self.r2 * other,
+            r3: self.r3 * other,
+        }
+    }
+}
+
+///
+/// Matrix / f32 implementation
+/// m / v
+///
+impl Div<f32> for &Mat4 {
+    type Output = Mat4;
+
+    fn div(self, other: f32) -> Self::Output {
+        Mat4 {
+            r0: self.r0 / other,
+            r1: self.r1 / other,
+            r2: self.r2 / other,
+            r3: self.r3 / other,
+        }
     }
 }
 

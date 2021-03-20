@@ -325,7 +325,6 @@ fn test_vec2_mul_vec2() {
     assert_eq!(result, Vec2::new(-5.0, -12.0));
 }
 
-
 #[test]
 fn test_vec2_div_vec2() {
     let vec1: Vec2 = Vec2::new(5.0, -6.0);
