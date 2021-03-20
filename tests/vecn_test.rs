@@ -62,7 +62,7 @@ fn test_vecn_normalize() {
     let mut vec1: VecN = VecN::new(&[4.0, -6.0, 8.0, -12.0]);
     vec1.normalize();
 
-    assert!(vec1.normalized() == vec1);
+    assert_eq!(vec1.normalized(), vec1);
     assert!(vec1.is_unit());
 }
 
