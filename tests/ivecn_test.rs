@@ -3,7 +3,7 @@ use straaljager::math::ivecn::*;
 #[test]
 fn test_ivecn_new() {
     let vec: IVecN = IVecN::new(&[1, 2, 3, 4, 5]);
-    assert_eq!(vec.size, 5);
+    assert_eq!(vec.size(), 5);
     assert_eq!(vec.data[0], 1);
     assert_eq!(vec.data[1], 2);
     assert_eq!(vec.data[2], 3);

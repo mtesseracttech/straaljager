@@ -3,53 +3,38 @@ use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
 #[derive(Debug, Clone)]
 pub struct IVecN {
-    pub size: usize,
     pub data: Vec<i32>,
 }
 
 impl IVecN {
     pub fn new(data: &[i32]) -> IVecN {
         IVecN {
-            size: data.len(),
             data: data.to_vec(),
         }
     }
 
     pub fn zero(size: usize) -> IVecN {
         IVecN {
-            size,
             data: vec![0; size],
         }
     }
 
     pub fn dot(&self, other: &Self) -> i32 {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result: i32 = 0;
-        for i in 0..self.size {
-            result += self.data[i] * other.data[i];
-        }
-        result
+        self.data.iter().zip(other.data.iter()).map(|(a, b)| a * b).sum()
     }
 
     pub fn length_squared(&self) -> i32 {
-        let mut result: i32 = 0;
-        for i in 0..self.size {
-            result += self.data[i] * self.data[i];
-        }
-        result
+        self.data.iter().map(|x| x * x).sum()
     }
 
     pub fn length(&self) -> f32 {
-        let mut result: i32 = 0;
-        for i in 0..self.size {
-            result += self.data[i] * self.data[i];
-        }
-        (result as f32).sqrt()
+        self.data.iter().map(|x| (x * x) as f32).sum::<f32>().sqrt()
     }
 
     pub fn size(&self) -> usize {
-        self.size
+        self.data.len()
     }
 
     pub fn is_unit(&self) -> bool {
@@ -59,7 +44,7 @@ impl IVecN {
 
 impl fmt::Display for IVecN {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "IVecN {{size: {}, data: {:?}}}", self.size, self.data)
+        write!(f, "IVecN {{size: {}, data: {:?}}}", self.size(), self.data)
     }
 }
 
@@ -67,12 +52,9 @@ impl Neg for IVecN {
     type Output = IVecN;
 
     fn neg(self) -> Self::Output {
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = -self.data[i];
+        IVecN {
+            data: self.data.iter().map(|x| -x).collect(),
         }
-
-        result
     }
 }
 
@@ -84,14 +66,11 @@ impl Add<IVecN> for IVecN {
     type Output = IVecN;
 
     fn add(self, other: IVecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] + other.data[i];
+        IVecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a + b).collect(),
         }
-
-        result
     }
 }
 
@@ -103,14 +82,11 @@ impl Sub<IVecN> for IVecN {
     type Output = IVecN;
 
     fn sub(self, other: IVecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] - other.data[i];
+        IVecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a - b).collect(),
         }
-
-        result
     }
 }
 
@@ -122,14 +98,11 @@ impl Mul<IVecN> for IVecN {
     type Output = IVecN;
 
     fn mul(self, other: IVecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] * other.data[i];
+        IVecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a * b).collect(),
         }
-
-        result
     }
 }
 
@@ -141,14 +114,11 @@ impl Div<IVecN> for IVecN {
     type Output = IVecN;
 
     fn div(self, other: IVecN) -> Self::Output {
-        assert!(self.size == other.size);
+        assert_eq!(self.size(), other.size());
 
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] / other.data[i];
+        IVecN {
+            data: self.data.iter().zip(other.data.iter()).map(|(a, b)| a / b).collect(),
         }
-
-        result
     }
 }
 
@@ -160,12 +130,9 @@ impl Mul<i32> for IVecN {
     type Output = IVecN;
 
     fn mul(self, other: i32) -> Self::Output {
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] * other;
+        IVecN {
+            data: self.data.iter().map(|x| x * other).collect(),
         }
-
-        result
     }
 }
 
@@ -177,12 +144,9 @@ impl Div<i32> for IVecN {
     type Output = IVecN;
 
     fn div(self, other: i32) -> Self::Output {
-        let mut result = IVecN::zero(self.size);
-        for i in 0..self.size {
-            result.data[i] = self.data[i] / other;
+        IVecN {
+            data: self.data.iter().map(|x| x / other).collect(),
         }
-
-        result
     }
 }
 
@@ -194,12 +158,9 @@ impl Mul<IVecN> for i32 {
     type Output = IVecN;
 
     fn mul(self, other: IVecN) -> Self::Output {
-        let mut result = IVecN::zero(other.size);
-        for i in 0..other.size {
-            result.data[i] = self * other.data[i];
+        IVecN {
+            data: other.data.iter().map(|x| x * self).collect(),
         }
-
-        result
     }
 }
 
@@ -209,17 +170,11 @@ impl Mul<IVecN> for i32 {
 ///
 impl PartialEq for IVecN {
     fn eq(&self, other: &Self) -> bool {
-        if self.size != other.size {
+        if self.size() != other.size() {
             return false;
         }
 
-        for i in 0..self.size {
-            if self.data[i] != other.data[i] {
-                return false;
-            }
-        }
-
-        true
+        self.data.iter().zip(other.data.iter()).all(|(a, b)| *a ==  *b)
     }
 }
 
@@ -230,7 +185,7 @@ impl Index<usize> for IVecN {
     type Output = i32;
 
     fn index(&self, index: usize) -> &Self::Output {
-        assert!(index < self.size);
+        assert!(index < self.size());
 
         &self.data[index]
     }
@@ -241,7 +196,7 @@ impl Index<usize> for IVecN {
 ///
 impl IndexMut<usize> for IVecN {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        assert!(index < self.size);
+        assert!(index < self.size());
 
         &mut self.data[index]
     }
