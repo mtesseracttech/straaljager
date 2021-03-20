@@ -10,7 +10,7 @@ pub struct Mat3 {
 }
 
 impl Mat3 {
-    pub fn new(d: [f32; 16]) -> Self {
+    pub fn new(d: [f32; 9]) -> Self {
         Mat3 {
             r0: Vec3::new(d[0], d[1], d[2]),
             r1: Vec3::new(d[3], d[4], d[5]),
@@ -43,36 +43,22 @@ impl Mat3 {
     }
 
     pub fn adjoint(&self) -> Mat3 {
-        // TODO: fix this
-        let v0 = self[2][2] * self[3][3] - self[3][2] * self[2][3];
-        let v1 = self[2][1] * self[3][3] - self[3][1] * self[2][3];
-        let v2 = self[2][1] * self[3][2] - self[3][1] * self[2][2];
-        let v3 = self[2][0] * self[3][3] - self[3][0] * self[2][3];
-        let v4 = self[2][0] * self[3][2] - self[3][0] * self[2][2];
-        let v5 = self[2][0] * self[3][1] - self[3][0] * self[2][1];
-        let v6 = self[1][2] * self[3][3] - self[3][2] * self[1][3];
-        let v7 = self[1][1] * self[3][3] - self[3][1] * self[1][3];
-        let v8 = self[1][1] * self[3][2] - self[3][1] * self[1][2];
-        let v9 = self[1][0] * self[3][3] - self[3][0] * self[1][3];
-        let v10 = self[1][0] * self[3][2] - self[3][0] * self[1][2];
-        let v11 = self[1][0] * self[3][1] - self[3][0] * self[1][1];
-
         let r0 = Vec3 {
-            x: self[1][1] * v0 - self[1][2] * v1 + self[1][3] * v2,
-            y: -(self[0][1] * v0 - self[0][2] * v1 + self[0][3] * v2),
-            z: self[0][1] * v6 - self[0][2] * v7 + self[0][3] * v8,
+            x: self[1][1] * self[2][2] - self[1][2] * self[2][1],
+            y: self[0][2] * self[2][1] - self[0][1] * self[2][2],
+            z: self[0][1] * self[1][2] - self[0][2] * self[1][1],
         };
 
         let r1 = Vec3 {
-            x: -(self[1][0] * v0 - self[1][2] * v3 + self[1][3] * v4),
-            y: self[0][0] * v0 - self[0][2] * v3 + self[0][3] * v4,
-            z: -(self[0][0] * v6 - self[0][2] * v9 + self[0][3] * v10),
+            x: self[1][2] * self[2][0] - self[1][0] * self[2][2],
+            y: self[0][0] * self[2][2] - self[2][0] * self[0][2],
+            z: self[1][0] * self[0][2] - self[0][0] * self[1][2],
         };
 
         let r2 = Vec3 {
-            x: self[1][0] * v1 - self[1][1] * v3 + self[1][3] * v5,
-            y: -(self[0][0] * v1 - self[0][1] * v3 + self[0][3] * v5),
-            z: self[0][0] * v7 - self[0][1] * v9 + self[0][3] * v11,
+            x: self[1][0] * self[2][1] - self[1][1] * self[2][0],
+            y: self[0][1] * self[2][0] - self[0][0] * self[2][1],
+            z: self[0][0] * self[1][1] - self[1][0] * self[0][1],
         };
 
         Mat3 { r0, r1, r2 }
@@ -107,21 +93,9 @@ impl Mul<&Mat3> for &Mat3 {
     fn mul(self, other: &Mat3) -> Self::Output {
         let t = other.transposed();
         Mat3 {
-            r0: Vec3::new(
-                self.r0.dot(&t.r0),
-                self.r0.dot(&t.r1),
-                self.r0.dot(&t.r2),
-            ),
-            r1: Vec3::new(
-                self.r1.dot(&t.r0),
-                self.r1.dot(&t.r1),
-                self.r1.dot(&t.r2),
-            ),
-            r2: Vec3::new(
-                self.r2.dot(&t.r0),
-                self.r2.dot(&t.r1),
-                self.r2.dot(&t.r2),
-            ),
+            r0: Vec3::new(self.r0.dot(&t.r0), self.r0.dot(&t.r1), self.r0.dot(&t.r2)),
+            r1: Vec3::new(self.r1.dot(&t.r0), self.r1.dot(&t.r1), self.r1.dot(&t.r2)),
+            r2: Vec3::new(self.r2.dot(&t.r0), self.r2.dot(&t.r1), self.r2.dot(&t.r2)),
         }
     }
 }
