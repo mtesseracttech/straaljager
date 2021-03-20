@@ -1,7 +1,7 @@
 use std::ops::{Div, Index, IndexMut, Mul};
 
-use crate::math::vec3::*;
-use crate::math::vec4::*;
+use crate::math::vec3::Vec3;
+use crate::math::vec4::Vec4;
 
 #[derive(Debug)]
 pub struct Mat4 {
@@ -263,10 +263,6 @@ impl Index<usize> for Mat4 {
     type Output = Vec4;
 
     fn index(&self, index: usize) -> &Self::Output {
-        if index >= 16 {
-            panic!("Requested an invalid index on a Mat4: {}", index);
-        }
-
         match index {
             0 => &self.r0,
             1 => &self.r1,
