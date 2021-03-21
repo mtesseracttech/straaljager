@@ -4,6 +4,7 @@ pub use vec3::*;
 pub use vec4::*;
 pub use vecn::*;
 
+pub use mat2::*;
 pub use mat3::*;
 pub use mat4::*;
 
@@ -13,6 +14,7 @@ pub mod vec3;
 pub mod vec4;
 pub mod vecn;
 
+pub mod mat2;
 pub mod mat3;
 pub mod mat4;
 

@@ -1,6 +1,6 @@
 use std::ops::{Div, Index, IndexMut, Mul};
 
-use crate::math::vec3::*;
+use crate::math::vec3::Vec3;
 
 #[derive(Debug)]
 pub struct Mat3 {
