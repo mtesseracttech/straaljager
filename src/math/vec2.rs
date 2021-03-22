@@ -1,5 +1,5 @@
-use crate::math::approx_eq;
 pub use crate::math::FloatVector;
+use crate::math::{approx_eq, PhysicsVector};
 use std::fmt;
 use std::ops::{Add, Div, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
@@ -209,6 +209,30 @@ impl IndexMut<usize> for Vec2 {
             0 => &mut self.x,
             1 => &mut self.y,
             _ => panic!("Requested an invalid index on a Vec2: {}", index),
+        }
+    }
+}
+
+impl PhysicsVector for Vec2 {
+    fn reflect(i: &Self, n: &Self) -> Self {
+        debug_assert!(
+            n.is_unit(),
+            "The reflect function only works with normalized normal vectors"
+        );
+        i - 2.0 * i.dot(n) * n
+    }
+
+    fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
+        debug_assert!(
+            n.is_unit(),
+            "The refraction function only works with normalized normal vectors"
+        );
+        let n_dot_i: f32 = n.dot(i);
+        let k: f32 = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
+        if k < 0.0 {
+            None
+        } else {
+            Some(eta * i - (eta * n_dot_i + k.sqrt()) * n)
         }
     }
 }
