@@ -1,6 +1,7 @@
+pub use crate::math::FloatVector;
 use crate::math::{approx_eq, PhysicsVector};
 use std::fmt;
-use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
+use std::ops::{Add, Div, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
@@ -12,14 +13,6 @@ pub struct Vec3 {
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
-    }
-
-    pub fn zero() -> Self {
-        Vec3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        }
     }
 
     pub fn right() -> Self {
@@ -46,10 +39,6 @@ impl Vec3 {
         }
     }
 
-    pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z
-    }
-
     pub fn cross(&self, other: &Self) -> Self {
         Vec3 {
             x: self.y * other.z - self.z * other.y,
@@ -57,37 +46,23 @@ impl Vec3 {
             z: self.x * other.y - self.y * other.x,
         }
     }
+}
 
-    pub fn length_squared(&self) -> f32 {
-        self.x * self.x + self.y * self.y + self.z * self.z
-    }
-
-    pub fn length(&self) -> f32 {
-        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
-    }
-
-    pub fn normalized(&self) -> Self {
-        let one_over_length: f32 = 1.0 / self.length();
-        Vec3 {
-            x: self.x * one_over_length,
-            y: self.y * one_over_length,
-            z: self.z * one_over_length,
+impl FloatVector<'_> for Vec3 {
+    fn zero() -> Self {
+        Self {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
         }
     }
 
-    pub fn normalize(&mut self) {
-        let one_over_length: f32 = 1.0 / self.length();
-        self.x *= one_over_length;
-        self.y *= one_over_length;
-        self.z *= one_over_length;
-    }
-
-    pub fn size() -> usize {
+    fn size() -> usize {
         3
     }
 
-    pub fn is_unit(&self) -> bool {
-        approx_eq(self.length_squared(), 1.0)
+    fn dot(&self, other: &Self) -> f32 {
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
 
@@ -109,115 +84,134 @@ impl Neg for Vec3 {
     }
 }
 
-///
-/// Vector addition:
-/// v1 + v2
-///
-impl Add<Vec3> for Vec3 {
-    type Output = Vec3;
+macro_rules! impl_binop {
+    ($Op: ident, $op_fn: ident, $sym: tt) => {
+        ///
+        /// Vec Vec multiplication
+        /// &v * &v
+        ///
+        impl $Op<&Vec3> for &Vec3 {
+            type Output = Vec3;
 
-    fn add(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
+            fn $op_fn(self, other: &Vec3) -> Self::Output {
+                Vec3 {
+                    x: self.x $sym other.x,
+                    y: self.y $sym other.y,
+                    z: self.z $sym other.z,
+                }
+            }
         }
-    }
+
+        ///
+        /// Vec Vec multiplication
+        /// v * &v
+        ///
+        impl $Op<Vec3> for &Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Self::Output {
+                self $sym &other
+            }
+        }
+
+        ///
+        /// Vec Vec multiplication
+        /// &v * v
+        ///
+        impl $Op<&Vec3> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: &Vec3) -> Self::Output {
+                &self $sym other
+            }
+        }
+
+        ///
+        /// Vec Vec multiplication
+        /// v * v
+        ///
+        impl $Op<Vec3> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Self::Output {
+                &self $sym &other
+            }
+        }
+
+        ///
+        /// f32 Vec multiplication
+        /// s * &v
+        ///
+        impl<'a> $Op<f32> for &'a Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: f32) -> Self::Output {
+                Vec3 {
+                    x: self.x $sym other,
+                    y: self.y $sym other,
+                    z: self.z $sym other,
+                }
+            }
+        }
+
+
+        ///
+        /// f32 Vec multiplication
+        /// s * v
+        ///
+        impl $Op<f32> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: f32) -> Self::Output {
+                &self $sym other
+            }
+        }
+
+
+        ///
+        /// Vec f32 multiplication
+        /// &v * s
+        ///
+        impl<'a> $Op<&'a Vec3> for f32 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: &'a Vec3) -> Self::Output {
+                Vec3 {
+                    x: self $sym other.x,
+                    y: self $sym other.y,
+                    z: self $sym other.z,
+                }
+            }
+        }
+
+        ///
+        /// Vec f32 multiplication
+        /// v * s
+        ///
+        impl $Op<Vec3> for f32 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Self::Output {
+                self $sym &other
+            }
+        }
+    };
 }
 
-///
-/// Vector subtraction
-/// v1 - v2
-///
-impl Sub<Vec3> for Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-        }
-    }
-}
+impl_binop!(Add, add, +);
+impl_binop!(Sub, sub, -);
+impl_binop!(Mul, mul, *);
+impl_binop!(Div, div, /);
 
 ///
-/// Member-wise vector * vector implementation
-/// v1 * v2
-///
-impl Mul<Vec3> for Vec3 {
-    type Output = Vec3;
-
-    fn mul(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self.x * other.x,
-            y: self.y * other.y,
-            z: self.z * other.z,
-        }
-    }
-}
-
-///
-/// Member-wise vector division
-/// v1 / v2
-///
-impl Div<Vec3> for Vec3 {
-    type Output = Vec3;
-
-    fn div(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self.x / other.x,
-            y: self.y / other.y,
-            z: self.z / other.z,
-        }
-    }
-}
-
-///
-/// Vector-scalar multiplication
+/// Vector-scalar multiplication assign
 /// v * s
 ///
-impl Mul<f32> for Vec3 {
-    type Output = Vec3;
-
-    fn mul(self, other: f32) -> Self::Output {
-        Vec3 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
-        }
-    }
-}
-
-///
-/// Vector-scalar division
-/// v / s
-///
-impl Div<f32> for Vec3 {
-    type Output = Vec3;
-
-    fn div(self, other: f32) -> Self::Output {
-        Vec3 {
-            x: self.x / other,
-            y: self.y / other,
-            z: self.z / other,
-        }
-    }
-}
-
-///
-/// Reversed vector-scalar multiplication
-/// s * v
-///
-impl Mul<Vec3> for f32 {
-    type Output = Vec3;
-
-    fn mul(self, other: Vec3) -> Self::Output {
-        Vec3 {
-            x: self * other.x,
-            y: self * other.y,
-            z: self * other.z,
-        }
+impl MulAssign<f32> for Vec3 {
+    fn mul_assign(&mut self, other: f32) {
+        self.x *= other;
+        self.y *= other;
+        self.z *= other;
     }
 }
 
@@ -270,7 +264,7 @@ impl PhysicsVector for Vec3 {
             n.is_unit(),
             "The reflect function only works with normalized normal vectors"
         );
-        *i - 2.0 * i.dot(n) * *n
+        i - 2.0 * i.dot(n) * n
     }
 
     fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
@@ -278,12 +272,12 @@ impl PhysicsVector for Vec3 {
             n.is_unit(),
             "The refraction function only works with normalized normal vectors"
         );
-        let n_dot_i = n.dot(i);
-        let k = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
+        let n_dot_i: f32 = n.dot(i);
+        let k: f32 = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
         if k < 0.0 {
             None
         } else {
-            Some(eta * *i - (eta * n_dot_i + k.sqrt()) * *n)
+            Some(eta * i - (eta * n_dot_i + k.sqrt()) * n)
         }
     }
 }

@@ -1,6 +1,7 @@
+pub use crate::math::FloatVector;
 use crate::math::{approx_eq, PhysicsVector};
 use std::fmt;
-use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
+use std::ops::{Add, Div, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec4 {
@@ -14,9 +15,11 @@ impl Vec4 {
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self { x, y, z, w }
     }
+}
 
-    pub fn zero() -> Self {
-        Vec4 {
+impl FloatVector<'_> for Vec4 {
+    fn zero() -> Self {
+        Self {
             x: 0.0,
             y: 0.0,
             z: 0.0,
@@ -24,42 +27,12 @@ impl Vec4 {
         }
     }
 
-    pub fn dot(&self, other: &Self) -> f32 {
+    fn size() -> usize {
+        3
+    }
+
+    fn dot(&self, other: &Self) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
-    }
-
-    pub fn length_squared(&self) -> f32 {
-        self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
-    }
-
-    pub fn length(&self) -> f32 {
-        (self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w).sqrt()
-    }
-
-    pub fn normalized(&self) -> Vec4 {
-        let one_over_length: f32 = 1.0 / self.length();
-        Vec4 {
-            x: self.x * one_over_length,
-            y: self.y * one_over_length,
-            z: self.z * one_over_length,
-            w: self.w * one_over_length,
-        }
-    }
-
-    pub fn normalize(&mut self) {
-        let one_over_length: f32 = 1.0 / self.length();
-        self.x *= one_over_length;
-        self.y *= one_over_length;
-        self.z *= one_over_length;
-        self.w *= one_over_length;
-    }
-
-    pub fn size() -> usize {
-        4
-    }
-
-    pub fn is_unit(&self) -> bool {
-        approx_eq(self.length_squared(), 1.0)
     }
 }
 
@@ -86,122 +59,138 @@ impl Neg for Vec4 {
     }
 }
 
-///
-/// Vector addition:
-/// v1 + v2
-///
-impl Add<Vec4> for Vec4 {
-    type Output = Vec4;
+macro_rules! impl_binop {
+    ($Op: ident, $op_fn: ident, $sym: tt) => {
+        ///
+        /// Vec Vec multiplication
+        /// &v * &v
+        ///
+        impl $Op<&Vec4> for &Vec4 {
+            type Output = Vec4;
 
-    fn add(self, other: Vec4) -> Self::Output {
-        Vec4 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-            w: self.w + other.w,
+            fn $op_fn(self, other: &Vec4) -> Self::Output {
+                Vec4 {
+                    x: self.x $sym other.x,
+                    y: self.y $sym other.y,
+                    z: self.z $sym other.z,
+                    w: self.w $sym other.w,
+                }
+            }
         }
-    }
+
+        ///
+        /// Vec Vec multiplication
+        /// v * &v
+        ///
+        impl $Op<Vec4> for &Vec4 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: Vec4) -> Self::Output {
+                self $sym &other
+            }
+        }
+
+        ///
+        /// Vec Vec multiplication
+        /// &v * v
+        ///
+        impl $Op<&Vec4> for Vec4 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: &Vec4) -> Self::Output {
+                &self $sym other
+            }
+        }
+
+        ///
+        /// Vec Vec multiplication
+        /// v * v
+        ///
+        impl $Op<Vec4> for Vec4 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: Vec4) -> Self::Output {
+                &self $sym &other
+            }
+        }
+
+        ///
+        /// f32 Vec multiplication
+        /// s * &v
+        ///
+        impl<'a> $Op<f32> for &'a Vec4 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: f32) -> Self::Output {
+                Vec4 {
+                    x: self.x $sym other,
+                    y: self.y $sym other,
+                    z: self.z $sym other,
+                    w: self.w $sym other,
+                }
+            }
+        }
+
+
+        ///
+        /// f32 Vec multiplication
+        /// s * v
+        ///
+        impl $Op<f32> for Vec4 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: f32) -> Self::Output {
+                &self $sym other
+            }
+        }
+
+
+        ///
+        /// Vec f32 multiplication
+        /// &v * s
+        ///
+        impl<'a> $Op<&'a Vec4> for f32 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: &'a Vec4) -> Self::Output {
+                Vec4 {
+                    x: self $sym other.x,
+                    y: self $sym other.y,
+                    z: self $sym other.z,
+                    w: self $sym other.w,
+                }
+            }
+        }
+
+        ///
+        /// Vec f32 multiplication
+        /// v * s
+        ///
+        impl $Op<Vec4> for f32 {
+            type Output = Vec4;
+
+            fn $op_fn(self, other: Vec4) -> Self::Output {
+                self $sym &other
+            }
+        }
+    };
 }
 
-///
-/// Vector subtraction:
-/// v1 - v2
-///
-impl Sub<Vec4> for Vec4 {
-    type Output = Vec4;
-
-    fn sub(self, other: Vec4) -> Self::Output {
-        Vec4 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-            w: self.w - other.w,
-        }
-    }
-}
+impl_binop!(Add, add, +);
+impl_binop!(Sub, sub, -);
+impl_binop!(Mul, mul, *);
+impl_binop!(Div, div, /);
 
 ///
-/// Member-wise vector multiplication:
-/// v1 * v2
-///
-impl Mul<Vec4> for Vec4 {
-    type Output = Vec4;
-
-    fn mul(self, other: Vec4) -> Self::Output {
-        Vec4 {
-            x: self.x * other.x,
-            y: self.y * other.y,
-            z: self.z * other.z,
-            w: self.w * other.w,
-        }
-    }
-}
-
-///
-/// Member-wise vector division:
-/// v1 / v2
-///
-impl Div<Vec4> for Vec4 {
-    type Output = Vec4;
-
-    fn div(self, other: Vec4) -> Self::Output {
-        Vec4 {
-            x: self.x / other.x,
-            y: self.y / other.y,
-            z: self.z / other.z,
-            w: self.w / other.w,
-        }
-    }
-}
-
-///
-/// Vector-scalar multiplication:
+/// Vector-scalar multiplication assign
 /// v * s
 ///
-impl Mul<f32> for Vec4 {
-    type Output = Vec4;
-
-    fn mul(self, other: f32) -> Self::Output {
-        Vec4 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
-            w: self.w * other,
-        }
-    }
-}
-
-///
-/// Vector-scalar division:
-/// v / s
-///
-impl Div<f32> for Vec4 {
-    type Output = Vec4;
-
-    fn div(self, other: f32) -> Self::Output {
-        Vec4 {
-            x: self.x / other,
-            y: self.y / other,
-            z: self.z / other,
-            w: self.w / other,
-        }
-    }
-}
-
-///
-/// Reversed vector-scalar multiplication:
-/// s * v
-///
-impl Mul<Vec4> for f32 {
-    type Output = Vec4;
-
-    fn mul(self, other: Vec4) -> Self::Output {
-        Vec4 {
-            x: self * other.x,
-            y: self * other.y,
-            z: self * other.z,
-            w: self * other.w,
-        }
+impl MulAssign<f32> for Vec4 {
+    fn mul_assign(&mut self, other: f32) {
+        self.x *= other;
+        self.y *= other;
+        self.z *= other;
+        self.w *= other;
     }
 }
 
@@ -260,7 +249,7 @@ impl PhysicsVector for Vec4 {
             n.is_unit(),
             "The reflect function only works with normalized normal vectors"
         );
-        *i - 2.0 * i.dot(n) * *n
+        i - 2.0 * i.dot(n) * n
     }
 
     fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
@@ -268,12 +257,12 @@ impl PhysicsVector for Vec4 {
             n.is_unit(),
             "The refraction function only works with normalized normal vectors"
         );
-        let n_dot_i = n.dot(i);
-        let k = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
+        let n_dot_i: f32 = n.dot(i);
+        let k: f32 = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
         if k < 0.0 {
             None
         } else {
-            Some(eta * *i - (eta * n_dot_i + k.sqrt()) * *n)
+            Some(eta * i - (eta * n_dot_i + k.sqrt()) * n)
         }
     }
 }
