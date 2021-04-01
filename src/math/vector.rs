@@ -379,9 +379,7 @@ impl<const S: usize> PhysicsVector for Vector<f32, S> {
         if k < 0.0 {
             None
         } else {
-            let x: Vector<f32, S> = i * eta;
-            let y: Vector<f32, S> = n * (eta * n_dot_i + k.sqrt());
-            Some(x - y)
+            Some(i * eta - n * (eta * n_dot_i + k.sqrt()))
         }
     }
 }
