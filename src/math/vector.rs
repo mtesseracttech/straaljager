@@ -1,6 +1,7 @@
 use crate::math::ApproxEq;
 use std::cmp::PartialEq;
 use std::fmt::Debug;
+use std::ops::Neg;
 use std::ops::{Index, IndexMut};
 
 pub type Vec2 = Vector<f32, 2>;
@@ -20,6 +21,38 @@ pub struct Vector<T, const S: usize> {
 impl<T, const S: usize> Vector<T, S> {
     pub fn from_slice(e: [T; S]) -> Self {
         Self { e }
+    }
+}
+
+///
+/// Negate operator:
+/// - v
+///
+impl<T: Neg<Output = T> + Default + Copy, const S: usize> Neg for Vector<T, S> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = -self.e[i];
+        }
+        Self { e }
+    }
+}
+
+///
+/// Borrowed negate operator
+/// - &v
+///
+impl<T: Neg<Output = T> + Default + Copy, const S: usize> Neg for &Vector<T, S> {
+    type Output = Vector<T, S>;
+
+    fn neg(self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = -self.e[i];
+        }
+        Vector::<T, S> { e }
     }
 }
 
