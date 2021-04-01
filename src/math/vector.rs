@@ -1,3 +1,4 @@
+use crate::math::PhysicsVector;
 use crate::math::{approx_eq, ApproxEq};
 use std::fmt::Debug;
 use std::ops::AddAssign;
@@ -177,7 +178,8 @@ macro_rules! impl_binop {
         /// Vector scalar math operation
         ///
         impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<T> for Vector<T, S> {
-            type Output = Self;
+            type Output = Vector<T, S>;
+
             fn $op_fn(self, other: T) -> Self::Output {
                 let mut e = [T::default(); S];
                 for i in 0..S {
@@ -191,7 +193,8 @@ macro_rules! impl_binop {
         /// Vector scalar reference math operation
         ///
         impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<&T> for Vector<T, S> {
-            type Output = Self;
+            type Output = Vector<T, S>;
+
             fn $op_fn(self, other: &T) -> Self::Output {
                 let mut e = [T::default(); S];
                 for i in 0..S {
@@ -206,6 +209,7 @@ macro_rules! impl_binop {
         ///
         impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<T> for &Vector<T, S> {
             type Output = Vector<T, S>;
+
             fn $op_fn(self, other: T) -> Self::Output {
                 let mut e = [T::default(); S];
                 for i in 0..S {
@@ -220,6 +224,7 @@ macro_rules! impl_binop {
         ///
         impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<&T> for &Vector<T, S> {
             type Output = Vector<T, S>;
+
             fn $op_fn(self, other: &T) -> Self::Output {
                 let mut e = [T::default(); S];
                 for i in 0..S {
@@ -347,5 +352,36 @@ impl<T> Vector<T, 3> {
 impl<T> Vector<T, 4> {
     pub fn new(x: T, y: T, z: T, w: T) -> Self {
         Self { e: [x, y, z, w] }
+    }
+}
+
+///
+/// PhysicsVector implementation for all float vectors
+///
+impl<const S: usize> PhysicsVector for Vector<f32, S> {
+    fn reflect(i: &Self, n: &Self) -> Self {
+        debug_assert!(
+            n.is_unit(),
+            "The reflect function only works with normalized normal vectors"
+        );
+        i - n * 2.0 * i.dot(n)
+    }
+
+    fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self> {
+        debug_assert!(
+            n.is_unit(),
+            "The refraction function only works with normalized normal vectors"
+        );
+
+        let n_dot_i: f32 = n.dot(i);
+
+        let k: f32 = 1.0 - eta * eta * (1.0 - n_dot_i * n_dot_i);
+        if k < 0.0 {
+            None
+        } else {
+            let x: Vector<f32, S> = i * eta;
+            let y: Vector<f32, S> = n * (eta * n_dot_i + k.sqrt());
+            Some(x - y)
+        }
     }
 }
