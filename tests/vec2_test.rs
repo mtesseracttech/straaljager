@@ -1,5 +1,5 @@
 use straaljager::math::utils::approx_eq;
-use straaljager::math::vec2::*;
+use straaljager::math::vector::*;
 
 #[test]
 fn test_vec2_new() {

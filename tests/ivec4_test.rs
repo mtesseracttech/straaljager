@@ -1,4 +1,4 @@
-use straaljager::math::ivec4::*;
+use straaljager::math::vector::*;
 
 #[test]
 fn test_ivec4_new() {
