@@ -1,16 +1,25 @@
-///
-/// Floating point equality
-///
-pub fn approx_eq(lhs: f32, rhs: f32) -> bool {
-    let abs_a = lhs.abs();
-    let abs_b = rhs.abs();
-    let diff = (lhs - rhs).abs();
-    if lhs == rhs {
-        true
-    } else if lhs == 0.0 || rhs == 0.0 || diff < std::f32::MIN_POSITIVE {
-        diff < 1e-5
-    } else {
-        diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
+pub trait ApproxEq<Rhs = Self> {
+    fn approx_eq(&self, other: &Rhs) -> bool;
+}
+
+impl ApproxEq for f32 {
+    fn approx_eq(&self, other: &f32) -> bool {
+        let abs_a = self.abs();
+        let abs_b = other.abs();
+        let diff = (self - other).abs();
+        if self == other {
+            true
+        } else if *self == 0.0 || *other == 0.0 || diff < std::f32::MIN_POSITIVE {
+            diff < 1e-5
+        } else {
+            diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
+        }
+    }
+}
+
+impl ApproxEq for i32 {
+    fn approx_eq(&self, other: &i32) -> bool {
+        self == other
     }
 }
 
