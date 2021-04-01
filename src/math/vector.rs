@@ -1,3 +1,5 @@
+#![allow(clippy::needless_range_loop)]
+
 use crate::math::PhysicsVector;
 use crate::math::{approx_eq, ApproxEq};
 use std::fmt::Debug;
