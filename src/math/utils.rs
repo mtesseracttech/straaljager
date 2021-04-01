@@ -1,3 +1,7 @@
+pub fn approx_eq(a: f32, b: f32) -> bool {
+    a.approx_eq(&b)
+}
+
 pub trait ApproxEq<Rhs = Self> {
     fn approx_eq(&self, other: &Rhs) -> bool;
 }

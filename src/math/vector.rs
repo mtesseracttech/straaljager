@@ -1,7 +1,8 @@
-use crate::math::ApproxEq;
-use std::cmp::PartialEq;
+use crate::math::{approx_eq, ApproxEq};
 use std::fmt::Debug;
+use std::ops::AddAssign;
 use std::ops::Neg;
+use std::ops::{Add, Div, Mul, Sub};
 use std::ops::{Index, IndexMut};
 
 pub type Vec2 = Vector<f32, 2>;
@@ -22,11 +23,135 @@ impl<T, const S: usize> Vector<T, S> {
     pub fn from_slice(e: [T; S]) -> Self {
         Self { e }
     }
+
+    pub fn size(&self) -> usize {
+        S
+    }
+}
+
+impl<T: Default + Copy + Mul<Output = T> + AddAssign, const S: usize> Vector<T, S> {
+    pub fn dot(&self, other: &Self) -> T {
+        let mut result = T::default();
+        for i in 0..S {
+            result += self.e[i] * other.e[i];
+        }
+        result
+    }
+
+    pub fn length_squared(&self) -> T {
+        let mut result = T::default();
+        for i in 0..S {
+            result += self.e[i] * self.e[i];
+        }
+        result
+    }
+}
+
+impl<const S: usize> Vector<f32, S> {
+    pub fn length(&self) -> f32 {
+        let mut result = 0.0;
+        for i in 0..S {
+            result += self.e[i] * self.e[i];
+        }
+        result.sqrt()
+    }
+
+    pub fn normalized(&self) -> Self {
+        let one_over_length = 1.0 / self.length();
+        let mut e = [0.0; S];
+        for i in 0..S {
+            e[i] = self.e[i] * one_over_length;
+        }
+        Vector::<f32, S> { e }
+    }
+
+    pub fn normalize(&mut self) {
+        let one_over_length = 1.0 / self.length();
+        for i in 0..S {
+            self.e[i] *= one_over_length;
+        }
+    }
+
+    pub fn is_unit(&self) -> bool {
+        approx_eq(self.length(), 1.0)
+    }
+}
+
+impl<T: Default + Copy + Div<Output = T>, const S: usize> Div for Vector<T, S> {
+    type Output = Self;
+
+    fn div(self, other: Self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] / other.e[i];
+        }
+        Vector::<T, S> { e }
+    }
+}
+
+impl<T: Default + Copy + Div<Output = T>, const S: usize> Div<T> for Vector<T, S> {
+    type Output = Self;
+
+    fn div(self, other: T) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] / other;
+        }
+        Vector::<T, S> { e }
+    }
+}
+
+impl<T: Default + Copy + Add<Output = T>, const S: usize> Add for Vector<T, S> {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] + other.e[i];
+        }
+        Vector::<T, S> { e }
+    }
+}
+
+impl<T: Default + Copy + Sub<Output = T>, const S: usize> Sub for Vector<T, S> {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] - other.e[i];
+        }
+        Vector::<T, S> { e }
+    }
+}
+
+impl<T: Default + Copy + Mul<Output = T>, const S: usize> Mul for Vector<T, S> {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] * other.e[i];
+        }
+        Vector::<T, S> { e }
+    }
+}
+
+impl<T: Default + Copy + Mul<Output = T>, const S: usize> Mul<T> for Vector<T, S> {
+    type Output = Self;
+
+    fn mul(self, other: T) -> Self::Output {
+        let mut e = [T::default(); S];
+        for i in 0..S {
+            e[i] = self.e[i] * other;
+        }
+        Vector::<T, S> { e }
+    }
 }
 
 ///
 /// Negate operator:
-/// - v
+/// -v
 ///
 impl<T: Neg<Output = T> + Default + Copy, const S: usize> Neg for Vector<T, S> {
     type Output = Self;
@@ -101,6 +226,18 @@ impl<T> Vector<T, 2> {
 impl<T> Vector<T, 3> {
     pub fn new(x: T, y: T, z: T) -> Self {
         Self { e: [x, y, z] }
+    }
+}
+
+impl<T: Mul<Output = T> + Sub<Output = T> + Neg<Output = T> + Copy> Vector<T, 3> {
+    pub fn cross(&self, other: &Self) -> Self {
+        Self {
+            e: [
+                self.e[1] * other.e[2] - self.e[2] * other.e[1],
+                -(self.e[0] * other.e[2] - self.e[2] * other.e[0]),
+                self.e[0] * other.e[1] - self.e[1] * other.e[0],
+            ],
+        }
     }
 }
 
