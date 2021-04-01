@@ -77,17 +77,70 @@ impl<const S: usize> Vector<f32, S> {
     }
 }
 
-impl<T: Default + Copy + Div<Output = T>, const S: usize> Div for Vector<T, S> {
-    type Output = Self;
+macro_rules! impl_binop {
+    ($Op: ident, $op_fn: ident, $sym: tt) => {
+        impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<Vector<T, S>>
+            for Vector<T, S>
+        {
+            type Output = Vector<T, S>;
 
-    fn div(self, other: Self) -> Self::Output {
-        let mut e = [T::default(); S];
-        for i in 0..S {
-            e[i] = self.e[i] / other.e[i];
+            fn $op_fn(self, other: Vector<T, S>) -> Self::Output {
+                let mut e = [T::default(); S];
+                for i in 0..S {
+                    e[i] = self.e[i] $sym other.e[i];
+                }
+                Vector::<T, S> { e }
+            }
         }
-        Vector::<T, S> { e }
-    }
+
+        impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<&Vector<T, S>>
+            for Vector<T, S>
+        {
+            type Output = Vector<T, S>;
+
+            fn $op_fn(self, other: &Vector<T, S>) -> Self::Output {
+                let mut e = [T::default(); S];
+                for i in 0..S {
+                    e[i] = self.e[i] $sym other.e[i];
+                }
+                Vector::<T, S> { e }
+            }
+        }
+
+        impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<Vector<T, S>>
+            for &Vector<T, S>
+        {
+            type Output = Vector<T, S>;
+
+            fn $op_fn(self, other: Vector<T, S>) -> Self::Output {
+                let mut e = [T::default(); S];
+                for i in 0..S {
+                    e[i] = self.e[i] $sym other.e[i];
+                }
+                Vector::<T, S> { e }
+            }
+        }
+
+        impl<T: Default + Copy + $Op<Output = T>, const S: usize> $Op<&Vector<T, S>>
+            for &Vector<T, S>
+        {
+            type Output = Vector<T, S>;
+
+            fn $op_fn(self, other: &Vector<T, S>) -> Self::Output {
+                let mut e = [T::default(); S];
+                for i in 0..S {
+                    e[i] = self.e[i] $sym other.e[i];
+                }
+                Vector::<T, S> { e }
+            }
+        }
+    };
 }
+
+impl_binop!(Add, add, +);
+impl_binop!(Sub, sub, -);
+impl_binop!(Mul, mul, *);
+impl_binop!(Div, div, /);
 
 impl<T: Default + Copy + Div<Output = T>, const S: usize> Div<T> for Vector<T, S> {
     type Output = Self;
@@ -96,42 +149,6 @@ impl<T: Default + Copy + Div<Output = T>, const S: usize> Div<T> for Vector<T, S
         let mut e = [T::default(); S];
         for i in 0..S {
             e[i] = self.e[i] / other;
-        }
-        Vector::<T, S> { e }
-    }
-}
-
-impl<T: Default + Copy + Add<Output = T>, const S: usize> Add for Vector<T, S> {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self::Output {
-        let mut e = [T::default(); S];
-        for i in 0..S {
-            e[i] = self.e[i] + other.e[i];
-        }
-        Vector::<T, S> { e }
-    }
-}
-
-impl<T: Default + Copy + Sub<Output = T>, const S: usize> Sub for Vector<T, S> {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self::Output {
-        let mut e = [T::default(); S];
-        for i in 0..S {
-            e[i] = self.e[i] - other.e[i];
-        }
-        Vector::<T, S> { e }
-    }
-}
-
-impl<T: Default + Copy + Mul<Output = T>, const S: usize> Mul for Vector<T, S> {
-    type Output = Self;
-
-    fn mul(self, other: Self) -> Self::Output {
-        let mut e = [T::default(); S];
-        for i in 0..S {
-            e[i] = self.e[i] * other.e[i];
         }
         Vector::<T, S> { e }
     }
