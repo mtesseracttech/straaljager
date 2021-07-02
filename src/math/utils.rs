@@ -1,17 +1,30 @@
-use std::cmp::Ordering;
+pub fn approx_eq(a: f32, b: f32) -> bool {
+    a.approx_eq(&b)
+}
 
-///
-/// Floating point equality
-///
-pub fn approx_eq(lhs: &f32, rhs: &f32) -> bool {
-    return match lhs.partial_cmp(rhs) {
-        None => false,
-        Some(o) => match o {
-            Ordering::Less => false,
-            Ordering::Equal => true,
-            Ordering::Greater => false,
-        },
-    };
+pub trait ApproxEq<Rhs = Self> {
+    fn approx_eq(&self, other: &Rhs) -> bool;
+}
+
+impl ApproxEq for f32 {
+    fn approx_eq(&self, other: &f32) -> bool {
+        let abs_a = self.abs();
+        let abs_b = other.abs();
+        let diff = (self - other).abs();
+        if self == other {
+            true
+        } else if *self == 0.0 || *other == 0.0 || diff < std::f32::MIN_POSITIVE {
+            diff < 1e-5
+        } else {
+            diff / (abs_a + abs_b).min(std::f32::MAX) < 1e-5
+        }
+    }
+}
+
+impl ApproxEq for i32 {
+    fn approx_eq(&self, other: &i32) -> bool {
+        self == other
+    }
 }
 
 ///
