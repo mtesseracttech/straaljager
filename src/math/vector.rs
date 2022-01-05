@@ -8,6 +8,8 @@ use std::ops::Neg;
 use std::ops::{Add, Div, Mul, Sub};
 use std::ops::{Index, IndexMut};
 
+use super::Zero;
+
 pub type Vec2 = Vector<f32, 2>;
 pub type Vec3 = Vector<f32, 3>;
 pub type Vec4 = Vector<f32, 4>;
@@ -38,13 +40,19 @@ impl<T, const S: usize> Vector<T, S> {
     }
 }
 
-impl<T: Default + Copy + Mul<Output = T> + AddAssign, const S: usize> Vector<T, S> {
+impl<T: Zero + Copy, const S: usize> Vector<T, S> {
+    pub fn zero() -> Self {
+        Self { e: [T::zero(); S] }
+    }
+}
+
+impl<T: Zero + Copy + Mul<Output = T> + AddAssign, const S: usize> Vector<T, S> {
     ///
     /// Dot product of two vectors by pairwise multiplication and taking the sum
     /// of the resulting vector
     ///
     pub fn dot(&self, other: &Self) -> T {
-        let mut result = T::default();
+        let mut result = T::zero();
         for i in 0..S {
             result += self.e[i] * other.e[i];
         }
@@ -56,7 +64,7 @@ impl<T: Default + Copy + Mul<Output = T> + AddAssign, const S: usize> Vector<T, 
     /// the sum of the resulting vector
     ///
     pub fn length_squared(&self) -> T {
-        let mut result = T::default();
+        let mut result = T::zero();
         for i in 0..S {
             result += self.e[i] * self.e[i];
         }

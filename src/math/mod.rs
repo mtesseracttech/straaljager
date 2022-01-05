@@ -1,16 +1,10 @@
+pub use matrix::*;
 pub use utils::*;
 pub use vector::*;
 
-pub use mat2::*;
-pub use mat3::*;
-pub use mat4::*;
-
+pub mod matrix;
 pub mod utils;
 pub mod vector;
-
-pub mod mat2;
-pub mod mat3;
-pub mod mat4;
 
 pub trait PhysicsVector: Sized {
     /// Normalizes n and reflects incident vector i over normal n
@@ -26,3 +20,4 @@ pub trait PhysicsVector: Sized {
     ///
     fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self>;
 }
+

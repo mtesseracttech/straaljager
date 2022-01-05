@@ -126,7 +126,6 @@ fn test_vecn_div_scalar() {
     assert_eq!(result, VecN::from_slice([-2.5, 3.0, -3.5, 4.0]));
 }
 
-
 #[test]
 fn test_vecn_index() {
     let vec1: VecN<6> = VecN::from_slice([5.0, -6.0, 7.0, -8.0, 9.0, -10.0]);
