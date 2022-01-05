@@ -34,14 +34,14 @@ impl ApproxEq for i32 {
 /// else -> input
 ///
 pub fn clamp(input: f32, lower: f32, upper: f32) -> f32 {
-    assert!(!(upper < lower));
-    return if input < lower {
+    assert!(!upper.lt(&lower));
+    if input < lower {
         lower
     } else if input > upper {
         upper
     } else {
         input
-    };
+    }
 }
 
 ///
@@ -68,7 +68,7 @@ pub fn mix_clamped(a: f32, b: f32, t: f32) -> f32 {
 /// https://en.wikipedia.org/wiki/Smoothstep
 ///
 pub fn smooth_mix(x: f32, upper: f32, lower: f32) -> f32 {
-    assert!(!(upper < lower));
+    assert!(!upper.lt(&lower));
     let t = clamp((x - lower) / (upper - lower), 0.0, 1.0);
     t * t * (3.0 - 2.0 * t)
 }

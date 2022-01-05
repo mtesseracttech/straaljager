@@ -79,6 +79,7 @@ impl<const S: usize> Vector<f32, S> {
     ///
     /// Get a normalized version of this vector
     ///
+    #[must_use]
     pub fn normalized(&self) -> Self {
         let one_over_length = 1.0 / self.length();
         let mut e = [0.0; S];
@@ -328,6 +329,7 @@ impl<T: Mul<Output = T> + Sub<Output = T> + Neg<Output = T> + Copy> Vector<T, 3>
     /// Cross product implementation which is only implemented for vectors of
     /// size 3
     ///
+    #[must_use]
     pub fn cross(&self, other: &Self) -> Self {
         Self {
             e: [
