@@ -83,7 +83,6 @@ fn test_ivec3_div_scalar() {
     assert_eq!(result, IVec3::new(-3, 3, -4));
 }
 
-
 #[test]
 fn test_ivec3_index() {
     let vec1: IVec3 = IVec3::new(5, -6, 7);

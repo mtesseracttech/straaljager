@@ -69,63 +69,73 @@ fn test_mat4_transposed() {
     assert_eq!(mat1, mat2);
 }
 
-//#[test]
-//fn test_mat4_mul_identity() {
-//    let mat1 = Mat4::identity();
-//    let mat2 = Mat4::identity();
-//
-//    let result = &mat1 * &mat2;
-//
-//    assert_eq!(result, Mat4::identity());
-//}
-//
-//#[test]
-//fn test_mat4_mul_identity_zero() {
-//    let mat1 = Mat4::identity();
-//    let mat2 = Mat4::zero();
-//
-//    let result = &mat1 * &mat2;
-//
-//    assert_eq!(result, Mat4::zero());
-//}
-//
-//#[test]
-//fn test_mat4_mul() {
-//    let mat1 = Mat4::new([
-//        1f32, 64f32, 16f32, 25f32, 4f32, -4f32, 5f32, -4f32, 2f32, 54f32, -4f32, 43f32, -59f32,
-//        23f32, 59f32, -14f32,
-//    ]);
-//    let mat2 = Mat4::new([
-//        12f32, -3f32, 54f32, 34f32, -23f32, 0f32, -12f32, 43f32, 67f32, -89f32, 19f32, 76f32,
-//        49f32, 56f32, 34f32, 53f32,
-//    ]);
-//
-//    let result = &mat1 * &mat2;
-//
-//    assert_eq!(
-//        result,
-//        Mat4::new([
-//            837f32, -27f32, 440f32, 5327f32, 279f32, -681f32, 223f32, 132f32, 621f32, 2758f32,
-//            846f32, 4365f32, 2030f32, -5858f32, -2817f32, 2725f32
-//        ])
-//    );
-//}
-//
-//#[test]
-//fn test_mat4_mul_non_commutative() {
-//    let mat1 = Mat4::new([
-//        1f32, 64f32, 16f32, 25f32, 4f32, -4f32, 5f32, -4f32, 2f32, 54f32, -4f32, 43f32, -59f32,
-//        23f32, 59f32, -14f32,
-//    ]);
-//
-//    let mat2 = Mat4::new([
-//        12f32, -3f32, 54f32, 34f32, -23f32, 0f32, -12f32, 43f32, 67f32, -89f32, 19f32, 76f32,
-//        49f32, 56f32, 34f32, 53f32,
-//    ]);
-//
-//    assert_ne!(&mat1 * &mat2, &mat2 * &mat1);
-//}
-//
+#[test]
+fn test_mat4_mul_identity() {
+    let mat1 = Mat4::identity();
+    let mat2 = Mat4::identity();
+
+    let result = &mat1 * &mat2;
+
+    assert_eq!(result, Mat4::identity());
+}
+
+#[test]
+fn test_mat4_mul_identity_zero() {
+    let mat1 = Mat4::identity();
+    let mat2 = Mat4::zero();
+
+    let result = &mat1 * &mat2;
+
+    assert_eq!(result, Mat4::zero());
+}
+
+#[test]
+fn test_mat4_mul() {
+    let mat1 = Mat4::new([
+        [1f32, 64f32, 16f32, 25f32],
+        [4f32, -4f32, 5f32, -4f32],
+        [2f32, 54f32, -4f32, 43f32],
+        [-59f32, 23f32, 59f32, -14f32],
+    ]);
+    let mat2 = Mat4::new([
+        [12f32, -3f32, 54f32, 34f32],
+        [-23f32, 0f32, -12f32, 43f32],
+        [67f32, -89f32, 19f32, 76f32],
+        [49f32, 56f32, 34f32, 53f32],
+    ]);
+
+    let result = &mat1 * &mat2;
+
+    assert_eq!(
+        result,
+        Mat4::new([
+            [-1898f32, 4478f32, 1967f32, 2158f32],
+            [-2584f32, -1131f32, 2217f32, -1693f32],
+            [-4735f32, 7418f32, 5035f32, 1784f32],
+            [-2786f32, 5967f32, 4055f32, 1721f32],
+        ])
+    );
+}
+
+#[test]
+fn test_mat4_mul_non_commutative() {
+    let mat1 = Mat4::new([
+        [1f32, 64f32, 16f32, 25f32],
+        [4f32, -4f32, 5f32, -4f32],
+        [2f32, 54f32, -4f32, 43f32],
+        [-59f32, 23f32, 59f32, -14f32],
+    ]);
+
+    let mat2 = Mat4::new([
+        [12f32, -3f32, 54f32, 34f32],
+        [-23f32, 0f32, -12f32, 43f32],
+        [67f32, -89f32, 19f32, 76f32],
+        [49f32, 56f32, 34f32, 53f32],
+    ]);
+
+    assert_ne!(&mat1 * &mat2, &mat2 * &mat1);
+}
+
 //#[test]
 //fn test_mat4_inverse_identity() {
 //    let mat = Mat4::identity();

@@ -76,7 +76,7 @@ fn test_mat2_mul() {
 
     let result = &mat1 * &mat2;
 
-    assert_eq!(result, Mat2::new([[3468f32, 2173f32], [1542f32, 802f32]]));
+    assert_eq!(result, Mat2::new([[-36f32, 693f32], [598f32, 4306f32]]));
 }
 
 #[test]

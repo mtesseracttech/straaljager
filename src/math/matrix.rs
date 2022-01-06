@@ -83,26 +83,25 @@ impl<T: Zero + One + Copy, const S: usize> Matrix<T, S, S> {
 
 // TODO: find a way to not use zero and copy
 impl<
-        T: Zero + Copy + Mul<Output = T> + AddAssign<T>,
+        T: Zero + Copy + Mul<Output = T> + AddAssign<T> + Debug,
         const R: usize,
         const C: usize,
         const S: usize,
-    > Mul<&Matrix<T, S, R>> for &Matrix<T, R, C>
+    > Mul<&Matrix<T, C, S>> for &Matrix<T, R, C>
 {
-    type Output = Matrix<T, S, C>;
+    type Output = Matrix<T, R, S>;
 
-    fn mul(self, other: &Matrix<T, S, R>) -> Self::Output {
-        let mut matrix = Matrix::<T, S, C>::zero();
-
-        for s in 0..S {
-            for c in 0..C {
+    fn mul(self, other: &Matrix<T, C, S>) -> Self::Output {
+        let mut matrix = Matrix::<T, R, S>::zero();
+        for r in 0..R {
+            for s in 0..S {
                 let mut result = T::zero();
 
-                for r in 0..R {
-                    result += self.columns[s][r] * other.columns[r][c];
+                for c in 0..C {
+                    result += self.columns[c][r] * other.columns[s][c];
                 }
 
-                matrix[s][c] = result;
+                matrix[s][r] = result;
             }
         }
 

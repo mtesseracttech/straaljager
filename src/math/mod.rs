@@ -20,4 +20,3 @@ pub trait PhysicsVector: Sized {
     ///
     fn refract(i: &Self, n: &Self, eta: f32) -> Option<Self>;
 }
-
