@@ -1,58 +1,8 @@
-pub use ivec2::*;
-pub use ivec3::*;
-pub use ivec4::*;
-pub use ivecn::*;
 pub use utils::*;
-pub use vec2::*;
-pub use vec3::*;
-pub use vec4::*;
-pub use vecn::*;
+pub use vector::*;
 
-use std::ops::{Mul, MulAssign};
-
-pub mod ivec2;
-pub mod ivec3;
-pub mod ivec4;
-pub mod ivecn;
 pub mod utils;
-pub mod vec2;
-pub mod vec3;
-pub mod vec4;
-pub mod vecn;
-
-pub trait FloatVector<'a>
-where
-    Self: 'a + Sized + MulAssign<f32>,
-    &'a Self: Mul<f32, Output = Self>,
-{
-    fn zero() -> Self;
-
-    fn size() -> usize;
-
-    fn dot(&self, other: &Self) -> f32;
-
-    fn length_squared(&self) -> f32 {
-        self.dot(self)
-    }
-
-    fn length(&self) -> f32 {
-        self.length_squared().sqrt()
-    }
-
-    fn normalized(&'a self) -> Self {
-        let one_over_length: f32 = 1.0 / self.length();
-        self * one_over_length
-    }
-
-    fn normalize(&'a mut self) {
-        let one_over_length: f32 = 1.0 / self.length();
-        *self *= one_over_length;
-    }
-
-    fn is_unit(&self) -> bool {
-        approx_eq(self.length_squared(), 1.0)
-    }
-}
+pub mod vector;
 
 pub trait PhysicsVector: Sized {
     /// Normalizes n and reflects incident vector i over normal n

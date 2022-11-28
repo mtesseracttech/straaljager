@@ -1,40 +1,28 @@
-use straaljager::math::ivec4::*;
+use straaljager::math::vector::*;
 
 #[test]
 fn test_ivec4_new() {
     let vec: IVec4 = IVec4::new(1, 2, 3, 4);
-    assert!(vec.x == 1);
-    assert!(vec.y == 2);
-    assert!(vec.z == 3);
-    assert!(vec.w == 4);
+    assert_eq!(vec.e[0], 1);
+    assert_eq!(vec.e[1], 2);
+    assert_eq!(vec.e[2], 3);
+    assert_eq!(vec.e[3], 4);
 }
 
 #[test]
 fn test_ivec4_dot() {
     let vec1: IVec4 = IVec4::new(1, 2, 3, 4);
     let vec2: IVec4 = IVec4::new(5, 6, 7, 8);
-    assert!(vec1.dot(&vec2) == 70);
+    assert_eq!(vec1.dot(&vec2), 70);
 
     let vec3: IVec4 = IVec4::new(1, 1, 1, 1);
-    assert!(vec3.dot(&vec3) == 4);
+    assert_eq!(vec3.dot(&vec3), 4);
 }
 
 #[test]
 fn test_ivec4_length_squared() {
     let vec1: IVec4 = IVec4::new(1, 3, 4, -4);
-    assert!(vec1.length_squared() == vec1.dot(&vec1));
-}
-
-#[test]
-fn test_ivec4_length() {
-    let vec1: IVec4 = IVec4::new(1, 0, 0, 0);
-    assert!(vec1.length() == 1.0);
-
-    let vec2: IVec4 = IVec4::new(1, -1, 1, -1);
-    assert!(vec2.length() == 2.0);
-
-    let vec2: IVec4 = IVec4::new(2, 4, 5, -6);
-    assert!(vec2.length() == 9.0);
+    assert_eq!(vec1.length_squared(), vec1.dot(&vec1));
 }
 
 #[test]
@@ -97,18 +85,10 @@ fn test_ivec4_div_scalar() {
 }
 
 #[test]
-fn test_ivec4_mul_scalar_reversed() {
-    let vec1: IVec4 = IVec4::new(5, -6, 7, -8);
-    let result: IVec4 = -2 * vec1;
-
-    assert_eq!(result, IVec4::new(-10, 12, -14, 16));
-}
-
-#[test]
 fn test_ivec4_index() {
     let vec1: IVec4 = IVec4::new(5, -6, 7, -8);
-    assert!(vec1[0] == 5);
-    assert!(vec1[1] == -6);
-    assert!(vec1[2] == 7);
-    assert!(vec1[3] == -8);
+    assert_eq!(vec1[0], 5);
+    assert_eq!(vec1[1], -6);
+    assert_eq!(vec1[2], 7);
+    assert_eq!(vec1[3], -8);
 }

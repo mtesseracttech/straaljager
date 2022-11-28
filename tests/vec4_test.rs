@@ -1,13 +1,13 @@
 use straaljager::math::utils::approx_eq;
-use straaljager::math::vec4::*;
+use straaljager::math::vector::*;
 
 #[test]
 fn test_vec4_new() {
     let vec: Vec4 = Vec4::new(1.0, 2.0, 3.0, 4.0);
-    assert!(approx_eq(vec.x, 1.0));
-    assert!(approx_eq(vec.y, 2.0));
-    assert!(approx_eq(vec.z, 3.0));
-    assert!(approx_eq(vec.w, 4.0));
+    assert!(approx_eq(vec.e[0], 1.0));
+    assert!(approx_eq(vec.e[1], 2.0));
+    assert!(approx_eq(vec.e[2], 3.0));
+    assert!(approx_eq(vec.e[3], 4.0));
 }
 
 #[test]
@@ -46,7 +46,11 @@ fn test_vec4_normalized() {
     assert!(vec1_norm.is_unit());
 
     let diff = vec1 / vec1_norm;
-    assert!(approx_eq(diff.x, diff.y) && approx_eq(diff.y, diff.z) && approx_eq(diff.z, diff.w));
+    assert!(
+        approx_eq(diff.e[0], diff.e[1])
+            && approx_eq(diff.e[1], diff.e[2])
+            && approx_eq(diff.e[2], diff.e[3])
+    );
 }
 
 #[test]
@@ -91,7 +95,6 @@ fn test_vec4_mul_vec4() {
     assert_eq!(result, Vec4::new(-5.0, -12.0, -21.0, -32.0));
 }
 
-
 #[test]
 fn test_vec4_div_vec4() {
     let vec1: Vec4 = Vec4::new(5.0, -6.0, 7.0, -8.0);
@@ -115,14 +118,6 @@ fn test_vec4_div_scalar() {
     let result: Vec4 = vec1 / -2.0;
 
     assert_eq!(result, Vec4::new(-2.5, 3.0, -3.5, 4.0));
-}
-
-#[test]
-fn test_vec4_mul_scalar_reversed() {
-    let vec1: Vec4 = Vec4::new(5.0, -6.0, 7.0, -8.0);
-    let result: Vec4 = -2.0 * vec1;
-
-    assert_eq!(result, Vec4::new(-10.0, 12.0, -14.0, 16.0));
 }
 
 #[test]
